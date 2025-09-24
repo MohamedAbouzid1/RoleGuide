@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, :root {
+  height: 100%;
+}
+
+/* Temporary check to ensure global CSS is loaded */
+body {
+  background-color: #f9fafb; /* should show a light gray background */
+}
+
