@@ -1,5 +1,8 @@
 import './globals.css';
 import React from 'react';
+import { Plus_Jakarta_Sans } from 'next/font/google';
+
+const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'] });
 
 export const metadata = {
   title: 'LebenslaufPro',
@@ -9,7 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="de">
-      <body className="min-h-screen bg-gray-50 text-gray-900">{children}</body>
+      <body className={`min-h-screen bg-gray-50 text-gray-900 ${jakarta.className}`}>{children}</body>
     </html>
   );
 }
