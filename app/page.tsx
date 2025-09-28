@@ -136,15 +136,15 @@ export default function HomePage() {
 
       <nav className="relative z-10 flex items-center justify-between px-6 py-6 lg:px-12">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-6 w-6 text-emerald-600" />
-          <span className="text-xl font-semibold">LebenslaufPro</span>
+          <Sparkles className="h-6 w-6 text-emerald-400" />
+          <span className="text-xl font-semibold text-white">LebenslaufPro</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-2 py-1 text-sm backdrop-blur">
-            <Globe className="h-4 w-4 text-gray-600" />
+          <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/90 px-2 py-1 text-sm backdrop-blur">
+            <Globe className="h-4 w-4 text-slate-600" />
             <button
               className={`rounded-full px-3 py-1 ${
-                language === "en" ? "bg-gray-900 text-white" : "text-gray-700"
+                language === "en" ? "bg-slate-700 text-white" : "text-slate-600"
               }`}
               onClick={() => setLanguage("en")}
             >
@@ -152,7 +152,7 @@ export default function HomePage() {
             </button>
             <button
               className={`rounded-full px-3 py-1 ${
-                language === "de" ? "bg-gray-900 text-white" : "text-gray-700"
+                language === "de" ? "bg-slate-700 text-white" : "text-slate-600"
               }`}
               onClick={() => setLanguage("de")}
            >
@@ -160,13 +160,13 @@ export default function HomePage() {
             </button>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm">
-            <Link href="/auth/login" className="text-gray-700 hover:text-gray-900">
+            <Link href="/auth/login" className="text-white hover:text-emerald-300">
               {t.footerLogin}
             </Link>
-            <Link href="/auth/register" className="text-gray-700 hover:text-gray-900">
+            <Link href="/auth/register" className="text-white hover:text-emerald-300">
               {t.footerRegister}
             </Link>
-            <Link href="/dashboard/dashboard" className="text-gray-700 hover:text-gray-900">
+            <Link href="/dashboard/dashboard" className="text-white hover:text-emerald-300">
               {t.footerDashboard}
             </Link>
           </div>
@@ -175,15 +175,15 @@ export default function HomePage() {
 
       <main className="relative z-10 px-6 pb-28 pt-16 lg:px-12 lg:pb-40 lg:pt-24">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="float-badge mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-4 py-2 text-sm font-medium shadow-sm backdrop-blur">
+          <div className="float-badge mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/95 px-4 py-2 text-sm font-medium shadow-sm backdrop-blur">
             <Bell className="h-4 w-4 text-emerald-600" />
             <span>{t.titleTopBadge}</span>
             <span className="ml-2 inline-block h-2 w-2 rounded-full bg-emerald-500" />
           </div>
-          <h1 className="reveal mx-auto mb-6 max-w-3xl text-5xl font-extrabold tracking-tight text-gray-900 sm:text-7xl">
-            {t.title} <span className="bg-gradient-to-r from-emerald-600 via-sky-500 to-blue-700 bg-clip-text text-transparent">{t.product}</span>
+          <h1 className="reveal mx-auto mb-6 max-w-3xl text-5xl font-extrabold tracking-tight text-white sm:text-7xl">
+            {t.title} <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent">{t.product}</span>
           </h1>
-          <p className="reveal mx-auto mb-10 max-w-2xl text-xl text-gray-600" style={{animationDelay:'120ms'}}>
+          <p className="reveal mx-auto mb-10 max-w-2xl text-xl text-white/90" style={{animationDelay:'120ms'}}>
             {t.subtitle}
           </p>
 
@@ -197,7 +197,7 @@ export default function HomePage() {
             />
             <button
               type="submit"
-              className="ripple h-12 rounded-full bg-gradient-to-r from-emerald-600 to-sky-600 px-6 font-semibold text-white shadow-lg transition hover:opacity-95 hover:scale-[1.05] hover:shadow-2xl"
+              className="ripple h-12 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 font-semibold text-white shadow-lg transition hover:opacity-95 hover:scale-[1.05] hover:shadow-2xl"
             >
               <span className="inline-flex items-center gap-2">
                 {t.cta}
@@ -208,8 +208,8 @@ export default function HomePage() {
 
           <div className="mx-auto mt-6 flex max-w-xl flex-col items-center justify-center gap-6 sm:flex-row">
             {t.points.map((p, i) => (
-              <div key={i} className="inline-flex items-center gap-2 text-sm text-gray-600 transition-transform hover:scale-[1.03]">
-                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              <div key={i} className="inline-flex items-center gap-2 text-sm text-white/80 transition-transform hover:scale-[1.03]">
+                <CheckCircle2 className="h-4 w-4 text-emerald-300" />
                 <span>{p}</span>
               </div>
             ))}
@@ -217,19 +217,19 @@ export default function HomePage() {
         </div>
       </main>
       {/* Product explainer section */}
-      <section className="relative z-10 px-6 pb-8 lg:px-12 lg:pb-14">
+      <section className="relative z-10 bg-slate-50 px-6 pb-8 lg:px-12 lg:pb-14">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
-          <div className="reveal rounded-3xl border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-teal-50 px-3 py-1 text-sm font-medium text-teal-700">
+          <div className="reveal rounded-3xl border border-emerald-200 bg-white p-6 shadow-lg backdrop-blur">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
               <MessageSquare className="h-4 w-4" /> Live AI Demo
             </div>
-            <div className="rounded-2xl bg-gradient-to-br from-white to-teal-50 p-5 shadow-inner">
+            <div className="rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 p-5 shadow-inner">
               <div className="mb-4 rounded-xl bg-white p-3 shadow-sm">
                 "Make my CV fit this job in Berlin — emphasize Python and project leadership."
               </div>
               <div className="rounded-xl bg-white p-3 shadow-sm">
-                <span className="inline-flex items-center gap-2 text-sm text-gray-700">
-                  <CheckCircle2 className="h-4 w-4 text-teal-600" /> Done. Tailored bullets added, ATS check passed, and a German greeting line is ready.
+                <span className="inline-flex items-center gap-2 text-sm text-emerald-700">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" /> Done. Tailored bullets added, ATS check passed, and a German greeting line is ready.
                 </span>
               </div>
             </div>
@@ -253,18 +253,18 @@ export default function HomePage() {
       </section>
 
       {/* Natural control */}
-      <section className="relative z-10 px-6 py-10 lg:px-12 lg:py-16">
-        <div className="mx-auto max-w-6xl rounded-3xl border border-gray-100 bg-white/70 p-8 shadow-sm backdrop-blur">
+      <section className="relative z-10 bg-white px-6 py-10 lg:px-12 lg:py-16">
+        <div className="mx-auto max-w-6xl rounded-3xl border border-teal-200 bg-white p-8 shadow-lg backdrop-blur">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div className="reveal">
               <div className="text-xs font-semibold tracking-widest text-teal-600">{t.sec2Kicker}</div>
               <h3 className="mb-2 text-2xl font-bold text-gray-900">{t.sec2Title}</h3>
               <p className="text-gray-600">{t.sec2Desc}</p>
             </div>
-            <div className="reveal rounded-2xl bg-gradient-to-br from-white to-emerald-50 p-4 shadow-inner" style={{animationDelay:'140ms'}}>
-              <div className="mb-3 rounded-lg bg-white p-3 text-sm text-gray-700 shadow-sm">“Write a short German cover letter for this role.”</div>
-              <div className="rounded-lg bg-white p-3 text-sm text-gray-700 shadow-sm">
-                <span className="inline-flex items-center gap-2"><Shield className="h-4 w-4 text-emerald-600" /> Polished. Tone matches job ad; grammar checked.</span>
+            <div className="reveal rounded-2xl bg-gradient-to-br from-teal-50 to-cyan-50 p-4 shadow-inner" style={{animationDelay:'140ms'}}>
+              <div className="mb-3 rounded-lg bg-white p-3 text-sm text-teal-700 shadow-sm">"Write a short German cover letter for this role."</div>
+              <div className="rounded-lg bg-white p-3 text-sm text-teal-700 shadow-sm">
+                <span className="inline-flex items-center gap-2"><Shield className="h-4 w-4 text-teal-600" /> Polished. Tone matches job ad; grammar checked.</span>
               </div>
             </div>
           </div>
@@ -272,17 +272,17 @@ export default function HomePage() {
       </section>
 
       {/* Automation section */}
-      <section className="relative z-10 px-6 pb-20 lg:px-12 lg:pb-28">
+      <section className="relative z-10 bg-slate-50 px-6 pb-20 lg:px-12 lg:pb-28">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 text-center">
-            <div className="text-xs font-semibold tracking-widest text-teal-600">{t.sec3Kicker}</div>
+            <div className="text-xs font-semibold tracking-widest text-cyan-600">{t.sec3Kicker}</div>
             <h3 className="mb-2 text-3xl font-bold text-gray-900">{t.sec3Title}</h3>
             <p className="text-gray-600">{t.sec3Desc}</p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {["Tailored Lebenslauf", "German cover letter", "Recruiter outreach"].map((title, i) => (
-              <div key={i} className="reveal rounded-2xl border border-gray-100 bg-white/70 p-6 shadow-sm backdrop-blur transition-transform hover:-translate-y-1 hover:shadow-lg" style={{animationDelay:`${i*100}ms`}}>
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">
+              <div key={i} className="reveal rounded-2xl border border-cyan-200 bg-white p-6 shadow-lg backdrop-blur transition-transform hover:-translate-y-1 hover:shadow-xl" style={{animationDelay:`${i*100}ms`}}>
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-cyan-100 px-3 py-1 text-sm font-medium text-cyan-700">
                   <Zap className="h-4 w-4" /> Smart action
                 </div>
                 <div className="font-semibold text-gray-900">{title}</div>
@@ -294,7 +294,7 @@ export default function HomePage() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="relative z-10 px-6 pb-20 lg:px-12 lg:pb-28">
+      <section className="relative z-10 bg-white px-6 pb-20 lg:px-12 lg:pb-28">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="mb-2 text-4xl font-extrabold text-gray-900">{t.bottomTitle}</h2>
           <p className="mb-6 text-lg text-gray-600">{t.bottomSub}</p>
@@ -306,7 +306,7 @@ export default function HomePage() {
               placeholder={t.placeholder}
               className="input-glow h-12 flex-1 rounded-full border border-gray-200 bg-white/80 px-5 text-gray-900 placeholder-gray-400 shadow-sm outline-none backdrop-blur focus:border-gray-900"
             />
-            <button type="submit" className="ripple h-12 rounded-full bg-gradient-to-r from-emerald-600 to-sky-600 px-6 font-semibold text-white shadow-lg transition hover:opacity-95 hover:scale-[1.05]">
+            <button type="submit" className="ripple h-12 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 font-semibold text-white shadow-lg transition hover:opacity-95 hover:scale-[1.05]">
               <span className="inline-flex items-center gap-2">{t.cta}<ArrowRight className="h-4 w-4" /></span>
             </button>
           </form>
