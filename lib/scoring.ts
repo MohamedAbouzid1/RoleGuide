@@ -105,7 +105,9 @@ export function scoreCV(cv: CV): Evaluation {
     'Prozessoptimierung',
     'Kundenbetreuung',
     'Qualitätssicherung'
-  ].filter(keyword => !cv.skills.includes(keyword)).slice(0, 3);
+  ].filter(keyword => !cv.skills.some(category => 
+    category.items.some(item => item.name.toLowerCase().includes(keyword.toLowerCase()))
+  )).slice(0, 3);
 
   return evaluation;
 }
@@ -204,14 +206,17 @@ function evaluateATS(cv: CV): number {
   if (!cv.personal.phone || !cv.personal.phone.match(/[\d\s\+\-\(\)]+/)) score -= 10;
   
   // Check skills are comma-free tokens
-  for (const skill of cv.skills) {
-    if (skill.includes(',')) score -= 2;
+  for (const category of cv.skills) {
+    for (const item of category.items) {
+      if (item.name.includes(',')) score -= 2;
+    }
   }
   
   // Check for standard section presence
   if (cv.experience.length === 0) score -= 20;
   if (cv.education.length === 0) score -= 20;
-  if (cv.skills.length < 5) score -= 10;
+  const totalSkills = cv.skills.reduce((sum, category) => sum + category.items.length, 0);
+  if (totalSkills < 5) score -= 10;
   
   return Math.max(0, score);
 }

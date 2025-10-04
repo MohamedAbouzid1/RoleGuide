@@ -9,7 +9,7 @@ interface CVPreviewProps {
 
 export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
   return (
-    <div className="mx-auto max-w-[210mm] bg-white p-[18mm] shadow-lg" style={{ minHeight: '297mm' }}>
+    <div className="mx-auto max-w-[210mm] bg-white p-[18mm] shadow-lg font-['Calibri']" style={{ minHeight: '297mm' }}>
       {/* Header with name on left, photo on right */}
       {sectionVisibility.personal && (
         <header className="mb-6 pb-2">
@@ -18,6 +18,11 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
               <h1 className="text-[28px] font-extrabold tracking-tight text-gray-900">
                 {cv.personal.fullName || 'Ihr Name'}
               </h1>
+              {cv.personal.role && (
+                <div className="text-[14px] font-medium text-gray-700 mt-1">
+                  {cv.personal.role}
+                </div>
+              )}
               <div className="mt-4 grid grid-cols-[140px_1fr] gap-y-1 text-[12px] leading-5 text-gray-800">
                 {(cv.personal.phone || cv.personal.email) && (<><div className="font-semibold italic text-gray-700">Kontaktdaten</div><div>{[cv.personal.phone, cv.personal.email].filter(Boolean).join(' • ')}</div></>)}
                 {(cv.personal.address?.street || cv.personal.address?.city || cv.personal.address?.country) && (
@@ -50,6 +55,19 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
             )}
           </div>
         </header>
+      )}
+
+      {/* Profile */}
+      {sectionVisibility.profile && cv.profile?.summary && (
+        <section className="mb-6">
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-[12px] font-extrabold uppercase tracking-widest text-gray-900">Profil</h2>
+            <div className="h-[2px] w-full translate-x-4 bg-gray-800" />
+          </div>
+          <div className="text-[13px] text-gray-800 leading-relaxed">
+            {cv.profile.summary}
+          </div>
+        </section>
       )}
 
       {/* Beruf */}

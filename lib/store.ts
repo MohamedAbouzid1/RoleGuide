@@ -33,6 +33,7 @@ const initialCV: CV = {
     signatureUrl: '',
     links: []
   },
+  profile: { summary: '' },
   experience: [],
   education: [],
   skills: [],
@@ -41,11 +42,13 @@ const initialCV: CV = {
   projects: [],
   volunteering: [],
   references: [],
-  closing: { place: '', date: '' }
+  closing: { place: '', date: '' },
+  language: 'de'
 };
 
 const initialVisibility: SectionVisibility = {
   personal: true,
+  profile: true,
   experience: true,
   education: true,
   skills: true,

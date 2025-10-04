@@ -1,44 +1,51 @@
 'use client';
 
 import { useCVStore } from '@/lib/store';
+import { useLanguage } from '@/lib/language-context';
 
 export function PersonalSection() {
   const { cv, updateSection } = useCVStore();
+  const { t } = useLanguage();
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-sm font-medium">Vollständiger Name</label>
+        <label className="block text-sm font-medium">{t('fullName')}</label>
         <input className="mt-1 w-full rounded border p-2" value={cv.personal.fullName}
           onChange={(e) => updateSection('personal', { ...cv.personal, fullName: e.target.value })} />
       </div>
+      <div>
+        <label className="block text-sm font-medium">{t('jobTitle')} (optional)</label>
+        <input className="mt-1 w-full rounded border p-2" placeholder={cv.language === 'de' ? "z.B. Softwareentwickler, Marketing Manager" : "e.g. Software Developer, Marketing Manager"} value={cv.personal.role ?? ''}
+          onChange={(e) => updateSection('personal', { ...cv.personal, role: e.target.value })} />
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium">Adresse</label>
+          <label className="block text-sm font-medium">{t('address')}</label>
           <div className="mt-1 grid grid-cols-2 gap-2">
-            <input className="rounded border p-2" placeholder="Straße & Nr." value={cv.personal.address?.street ?? ''}
+            <input className="rounded border p-2" placeholder={cv.language === 'de' ? "Straße & Nr." : "Street & No."} value={cv.personal.address?.street ?? ''}
               onChange={(e) => updateSection('personal', { ...cv.personal, address: { ...cv.personal.address, street: e.target.value } })} />
-            <input className="rounded border p-2" placeholder="PLZ" value={cv.personal.address?.postalCode ?? ''}
+            <input className="rounded border p-2" placeholder={cv.language === 'de' ? "PLZ" : "Postal Code"} value={cv.personal.address?.postalCode ?? ''}
               onChange={(e) => updateSection('personal', { ...cv.personal, address: { ...cv.personal.address, postalCode: e.target.value } })} />
-            <input className="rounded border p-2" placeholder="Stadt" value={cv.personal.address?.city ?? cv.personal.city ?? ''}
+            <input className="rounded border p-2" placeholder={cv.language === 'de' ? "Stadt" : "City"} value={cv.personal.address?.city ?? cv.personal.city ?? ''}
               onChange={(e) => updateSection('personal', { ...cv.personal, address: { ...cv.personal.address, city: e.target.value } })} />
-            <input className="rounded border p-2" placeholder="Land" value={cv.personal.address?.country ?? ''}
+            <input className="rounded border p-2" placeholder={cv.language === 'de' ? "Land" : "Country"} value={cv.personal.address?.country ?? ''}
               onChange={(e) => updateSection('personal', { ...cv.personal, address: { ...cv.personal.address, country: e.target.value } })} />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium">E-Mail</label>
+          <label className="block text-sm font-medium">{t('email')}</label>
           <input className="mt-1 w-full rounded border p-2" value={cv.personal.email}
             onChange={(e) => updateSection('personal', { ...cv.personal, email: e.target.value })} />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium">Telefon</label>
+          <label className="block text-sm font-medium">{t('phone')}</label>
           <input className="mt-1 w-full rounded border p-2" value={cv.personal.phone ?? ''}
             onChange={(e) => updateSection('personal', { ...cv.personal, phone: e.target.value })} />
         </div>
         <div>
-          <label className="block text-sm font-medium">Foto (optional)</label>
+          <label className="block text-sm font-medium">{t('profilePicture')} (optional)</label>
           <div className="mt-1 flex items-center gap-3">
             <input
               type="file"

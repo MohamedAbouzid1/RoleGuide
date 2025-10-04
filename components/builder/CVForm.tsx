@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { PersonalSection } from './sections/PersonalSection';
+import { ProfileSection } from './sections/ProfileSection';
 import { ExperienceSection } from './sections/ExperienceSection';
 import { EducationSection } from './sections/EducationSection';
 import { SkillsSection } from './sections/SkillsSection';
@@ -41,6 +42,22 @@ export function CVForm({ evaluation }: CVFormProps) {
           </AccordionTrigger>
           <AccordionContent>
             <PersonalSection />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="profile">
+          <AccordionTrigger>
+            <div className="flex items-center justify-between w-full mr-4">
+              <span>Profil</span>
+              <Switch
+                checked={sectionVisibility.profile}
+                onCheckedChange={() => toggleSection('profile')}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <ProfileSection />
           </AccordionContent>
         </AccordionItem>
 

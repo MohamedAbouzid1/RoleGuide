@@ -217,7 +217,7 @@ export default function HomePage() {
         </div>
       </main>
       {/* Product explainer section */}
-      <section className="relative z-10 bg-slate-50 px-6 pb-8 lg:px-12 lg:pb-14">
+      <section className="relative z-10 bg-slate-50 px-6 pt-16 pb-8 lg:px-12 lg:pt-20 lg:pb-14">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
           <div className="reveal rounded-3xl border border-emerald-200 bg-white p-6 shadow-lg backdrop-blur">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">

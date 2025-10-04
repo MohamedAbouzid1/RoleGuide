@@ -1,6 +1,7 @@
 export type CV = {
     personal: {
       fullName: string;
+      role?: string; // Professional role/title
       city?: string; // legacy
       address?: {
         street?: string;
@@ -17,6 +18,9 @@ export type CV = {
       githubUrl?: string;
       links?: { label: string; url: string }[];
       signatureUrl?: string;
+    };
+    profile?: {
+      summary: string; // Professional summary/profile text
     };
     experience: {
       role: string;
@@ -40,6 +44,7 @@ export type CV = {
     volunteering?: { org: string; role: string; bullets?: string[]; date?: string }[];
     references?: { note: string }[];
     closing?: { place?: string; date?: string };
+    language?: 'en' | 'de'; // CV language
   };
   
   export type Evaluation = {
@@ -62,6 +67,7 @@ export type CV = {
   
   export type SectionVisibility = {
     personal: boolean;
+    profile: boolean;
     experience: boolean;
     education: boolean;
     skills: boolean;

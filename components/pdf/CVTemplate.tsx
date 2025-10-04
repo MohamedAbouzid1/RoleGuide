@@ -2,18 +2,58 @@ import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Font, PDFViewer, Image } from '@react-pdf/renderer';
 import { CV } from '@/lib/types';
 
+// Language-specific labels
+const labels = {
+  de: {
+    personal: 'PERSÖNLICHE ANGABEN',
+    profile: 'BERUFLICHES PROFIL',
+    experience: 'BERUFSERFAHRUNG',
+    education: 'AUSBILDUNG',
+    skills: 'FÄHIGKEITEN',
+    languages: 'SPRACHEN',
+    certificates: 'ZERTIFIKATE',
+    projects: 'PROJEKTE',
+    volunteering: 'EHRENAMT',
+    references: 'REFERENZEN',
+    current: 'Aktuell',
+    present: 'Heute',
+    native: 'Muttersprache',
+    fluent: 'Fließend',
+    conversational: 'Konversation',
+    basic: 'Grundkenntnisse',
+  },
+  en: {
+    personal: 'PERSONAL INFORMATION',
+    profile: 'PROFESSIONAL PROFILE',
+    experience: 'WORK EXPERIENCE',
+    education: 'EDUCATION',
+    skills: 'SKILLS',
+    languages: 'LANGUAGES',
+    certificates: 'CERTIFICATES',
+    projects: 'PROJECTS',
+    volunteering: 'VOLUNTEERING',
+    references: 'REFERENCES',
+    current: 'Current',
+    present: 'Present',
+    native: 'Native',
+    fluent: 'Fluent',
+    conversational: 'Conversational',
+    basic: 'Basic',
+  },
+};
+
 // Register fonts
 Font.register({
-  family: 'Roboto',
+  family: 'Calibri',
   fonts: [
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-regular-webfont.ttf' },
-    { src: 'https://cdnjs.cloudflare.com/ajax/libs/ink/3.1.10/fonts/Roboto/roboto-bold-webfont.ttf', fontWeight: 'bold' },
+    { src: 'https://fonts.gstatic.com/s/calibri/v20/KFOlCnqEu92Fr1MmWUlfBBc4.woff2', fontWeight: 'normal' },
+    { src: 'https://fonts.gstatic.com/s/calibri/v20/KFOmCnqEu92Fr1Mu4mxK.woff2', fontWeight: 'bold' },
   ],
 });
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'Roboto',
+    fontFamily: 'Calibri',
     fontSize: 11,
     padding: 40,
     lineHeight: 1.5,
@@ -28,7 +68,13 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 2,
+  },
+  role: {
+    fontSize: 12,
+    fontWeight: 'normal',
+    color: '#666',
+    marginBottom: 8,
   },
   photo: {
     width: 110,
@@ -104,6 +150,9 @@ interface CVTemplateProps {
 }
 
 export function CVTemplate({ cv }: CVTemplateProps) {
+  const lang = cv.language || 'de';
+  const t = labels[lang];
+  
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -111,6 +160,7 @@ export function CVTemplate({ cv }: CVTemplateProps) {
         <View style={styles.header}>
           <View>
             <Text style={styles.name}>{cv.personal.fullName}</Text>
+            {cv.personal.role && <Text style={styles.role}>{cv.personal.role}</Text>}
             <View style={styles.contactInfo}>
               {cv.personal.email && <Text>{cv.personal.email}</Text>}
               {cv.personal.phone && <Text>{cv.personal.phone}</Text>}
@@ -135,16 +185,26 @@ export function CVTemplate({ cv }: CVTemplateProps) {
           </View>
         )}
 
+        {/* Profile */}
+        {cv.profile?.summary && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>{t.profile}</Text>
+            <Text style={{ fontSize: 11, lineHeight: 1.5, color: '#333' }}>
+              {cv.profile.summary}
+            </Text>
+          </View>
+        )}
+
         {/* Berufserfahrung */}
         {cv.experience.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Beruf</Text>
+            <Text style={styles.sectionTitle}>{t.experience}</Text>
             {cv.experience.map((exp, i) => (
               <View key={i} style={styles.experienceItem}>
                 <View style={styles.experienceHeader}>
                   <Text style={styles.jobTitle}>{exp.role}</Text>
                   <Text style={styles.dates}>
-                    {exp.start} – {exp.end || 'Heute'}
+                    {exp.start} – {exp.end || t.present}
                   </Text>
                 </View>
                 <Text style={styles.company}>
@@ -167,7 +227,7 @@ export function CVTemplate({ cv }: CVTemplateProps) {
         {/* Ausbildung */}
         {cv.education.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Ausbildung</Text>
+            <Text style={styles.sectionTitle}>{t.education}</Text>
             {cv.education.map((edu, i) => (
               <View key={i} style={styles.experienceItem}>
                 <View style={styles.experienceHeader}>
@@ -187,7 +247,7 @@ export function CVTemplate({ cv }: CVTemplateProps) {
         {/* Fähigkeiten */}
         {cv.skills.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Fähigkeiten</Text>
+            <Text style={styles.sectionTitle}>{t.skills}</Text>
             {cv.skills.map((cat, i) => (
               <View key={i} style={{ marginBottom: 6 }}>
                 <Text style={{ fontSize: 11, fontWeight: 'bold' }}>{cat.category}</Text>
@@ -233,7 +293,7 @@ export function CVTemplate({ cv }: CVTemplateProps) {
         {/* Sprachkenntnisse */}
         {cv.languages.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Sprachkenntnisse</Text>
+            <Text style={styles.sectionTitle}>{t.languages}</Text>
             <View style={styles.languagesGrid}>
               {cv.languages.map((lang, i) => (
                 <Text key={i} style={styles.language}>
