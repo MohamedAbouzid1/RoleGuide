@@ -41,3 +41,5 @@ coverage/
 # Temp
 tmp/
 *.local
+
+CLAUDE.md

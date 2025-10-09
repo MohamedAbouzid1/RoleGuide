@@ -8,6 +8,7 @@ import { CVPreview } from '@/components/builder/CVPreview';
 import { Toolbar } from '@/components/builder/Toolbar';
 import { useToast } from '@/components/ui/use-toast';
 import { CV, Evaluation } from '@/lib/types';
+import { draftsApi, pdfApi } from '@/lib/api-client';
 
 export default function BuilderPage() {
     const params = useParams();
@@ -32,10 +33,7 @@ export default function BuilderPage() {
     useEffect(() => {
         const loadDraft = async () => {
         try {
-            const response = await fetch(`/api/drafts/${(params as any).id}`);
-            if (!response.ok) throw new Error('Draft not found');
-            
-            const draft = await response.json();
+            const draft = await draftsApi.getById((params as any).id);
             updateCV(draft.data as CV);
             if (draft.lastEvaluation) {
             setEvaluation(draft.lastEvaluation as Evaluation);
@@ -52,7 +50,7 @@ export default function BuilderPage() {
             setLoading(false);
         }
         };
-    
+
         if ((params as any).id !== 'new') {
         loadDraft();
         } else {
@@ -75,38 +73,27 @@ export default function BuilderPage() {
     const saveDraft = useCallback(async (isAutosave = false) => {
         setSaving(true);
         try {
-        const url = (params as any).id === 'new' ? '/api/drafts' : `/api/drafts/${(params as any).id}`;
-        const method = (params as any).id === 'new' ? 'POST' : 'PUT';
-        
-        const response = await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
+        const draftData = {
             data: cv,
             title: cv.personal.fullName || 'Mein Lebenslauf'
-            }),
-        });
-    
-        if (!response.ok) throw new Error('Speichern fehlgeschlagen');
-        
-        const draft = await response.json();
-        
+        };
+
+        let draft;
         if ((params as any).id === 'new') {
+            draft = await draftsApi.create(draftData);
             router.replace(`/builder/${draft.id}`);
+        } else {
+            draft = await draftsApi.update((params as any).id, draftData);
         }
-        
+
         if (!isAutosave) {
             // Also create a snapshot for manual saves
-            await fetch(`/api/drafts/${draft.id}/snapshot`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: cv }),
-            });
+            await draftsApi.createSnapshot(draft.id, cv);
         }
-        
+
         setLastSaved(new Date());
         setDirty(false);
-        
+
         if (!isAutosave) {
             toast({
             title: 'Gespeichert',
@@ -127,30 +114,27 @@ export default function BuilderPage() {
     const handleEvaluate = async () => {
         setEvaluating(true);
         try {
+        // Note: /api/evaluate endpoint needs to be added to backend server
         const response = await fetch('/api/evaluate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cv),
         });
-    
+
         if (!response.ok) throw new Error('Bewertung fehlgeschlagen');
-        
+
         const result = await response.json();
         setEvaluation(result);
-        
+
         // Save evaluation to draft
         if ((params as any).id !== 'new') {
-            await fetch(`/api/drafts/${(params as any).id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+            await draftsApi.patch((params as any).id, {
                 lastEvaluation: result,
                 overallScore: result.overallScore,
                 atsScore: result.atsScore,
-            }),
             });
         }
-        
+
         toast({
             title: 'Bewertung abgeschlossen',
             description: `Gesamtpunktzahl: ${result.overallScore}/100`,
@@ -168,22 +152,14 @@ export default function BuilderPage() {
     
     const handleExport = async () => {
         try {
-        const response = await fetch('/api/export/pdf', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(cv),
-        });
-    
-        if (!response.ok) throw new Error('Export fehlgeschlagen');
-        
-        const blob = await response.blob();
+        const blob = await pdfApi.export(cv);
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `${cv.personal.fullName || 'Lebenslauf'}.pdf`;
         a.click();
         window.URL.revokeObjectURL(url);
-        
+
         toast({
             title: 'Exportiert',
             description: 'Ihr Lebenslauf wurde als PDF heruntergeladen',

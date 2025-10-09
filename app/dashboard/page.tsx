@@ -1,13 +1,14 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
+import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/language-context';
+import { draftsApi } from '@/lib/api-client';
 
 export default function DashboardIndex() {
-  const { data: session, status } = useSession();
+  const { user, loading, logout } = useAuth();
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const { t, language, setLanguage, cvLanguage, setCvLanguage } = useLanguage();
@@ -15,51 +16,41 @@ export default function DashboardIndex() {
   const handleCreateNewCV = async () => {
     setIsCreating(true);
     try {
-      // Create a new draft
-      const response = await fetch('/api/drafts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: cvLanguage === 'de' ? 'Mein Lebenslauf' : 'My CV',
-          data: {
-            personal: {
-              firstName: '',
-              lastName: '',
-              email: '',
-              phone: '',
-              address: '',
-              dateOfBirth: '',
-              nationality: '',
-              profilePicture: ''
-            },
-            profile: {
-              summary: ''
-            },
-            experience: [],
-            education: [],
-            skills: [],
-            languages: [],
-            language: cvLanguage
-          }
-        }),
+      // Create a new draft using the backend API
+      const draft = await draftsApi.create({
+        title: cvLanguage === 'de' ? 'Mein Lebenslauf' : 'My CV',
+        data: {
+          personal: {
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            address: '',
+            dateOfBirth: '',
+            nationality: '',
+            profilePicture: ''
+          },
+          profile: {
+            summary: ''
+          },
+          experience: [],
+          education: [],
+          skills: [],
+          languages: [],
+          language: cvLanguage
+        }
       });
 
-      if (response.ok) {
-        const draft = await response.json();
-        router.push(`/builder/${draft.id}`);
-      } else {
-        console.error('Failed to create new CV');
-      }
+      router.push(`/builder/${draft.id}`);
     } catch (error) {
       console.error('Error creating new CV:', error);
+      alert('Failed to create CV. Please try again.');
     } finally {
       setIsCreating(false);
     }
   };
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <main className="mx-auto max-w-4xl p-8">
         <div className="flex items-center justify-center min-h-[400px]">
@@ -69,7 +60,7 @@ export default function DashboardIndex() {
     );
   }
 
-  if (!session) {
+  if (!user) {
     return (
       <main className="mx-auto max-w-4xl p-8">
         <div className="text-center">
@@ -89,7 +80,7 @@ export default function DashboardIndex() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">{t('dashboard')}</h1>
-          <p className="text-gray-600 mt-1">{t('welcomeBack')}, {session.user?.name || session.user?.email}</p>
+          <p className="text-gray-600 mt-1">{t('welcomeBack')}, {user?.name || user?.email}</p>
         </div>
         <div className="flex items-center gap-4">
           {/* Language Selector */}
@@ -105,7 +96,10 @@ export default function DashboardIndex() {
             </select>
           </div>
           <button
-            onClick={() => signOut({ callbackUrl: '/' })}
+            onClick={() => {
+              logout();
+              router.push('/');
+            }}
             className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
           >
             {t('logout')}
