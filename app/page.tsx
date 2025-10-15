@@ -2,13 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Bell, CheckCircle2, Globe, Sparkles, MessageSquare, Brain, Shield, Zap, Clock } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { ArrowRight, CheckCircle2, Globe, Sparkles, MessageSquare, Brain, Shield, Zap, Clock } from "lucide-react";
 
 export default function HomePage() {
-  const { toast } = useToast();
   const [language, setLanguage] = useState<"en" | "de">("en");
-  const [email, setEmail] = useState("");
   // Intersection Observer for reveal animations & scroll progress
   React.useEffect(() => {
     const elements = Array.from(document.querySelectorAll<HTMLElement>(`.reveal`));
@@ -52,17 +49,15 @@ export default function HomePage() {
   }, []);
   const t = {
     en: {
-      titleTopBadge: "Early Access Program",
-      title: "Get Early Access to",
-      product: "LebenslaufPro AI",
+      title: "Create ATS-Optimized CVs for the German Job Market",
       subtitle:
-        "Be the first to experience the german market's AI-powered application management. Join our exclusive waiting list for priority access.",
-      placeholder: "Enter your email address",
-      cta: "Join Waitlist",
+        "AI-powered CV builder that understands German hiring standards. Get past applicant tracking systems and land more interviews.",
+      ctaPrimary: "Create Your CV Now",
+      ctaSecondary: "See How It Works",
       points: [
-        "No spam guarantee",
-        "Early access priority",
-        "Privacy focused",
+        "Free to start",
+        "ATS-optimized",
+        "German market expert",
       ],
       section1Title: "An AI that understands the German job market",
       section1Sub: "Talk to your career like a partner. We analyze job ads, tailor your CV, and draft messages that resonate with German recruiters.",
@@ -78,24 +73,40 @@ export default function HomePage() {
       sec3Kicker: "DO MORE",
       sec3Title: "Automation that helps",
       sec3Desc: "One command can create a German‑style Lebenslauf, write a tailored Anschreiben, and prepare recruiter messages—guardrails on.",
-      bottomTitle: "Be first in line",
-      bottomSub: "We're inviting users in waves. Join the waitlist for early access as features go live.",
+      demoAvailable: "Currently available: AI-powered CV creation",
+      demoComingSoon: "Cover letters & recruiter outreach coming soon",
+      howItWorksTitle: "How It Works",
+      howItWorksSub: "Get your professional German CV in three simple steps",
+      howItWorksSteps: [
+        { title: "Sign Up Free", desc: "Create your account in seconds—no credit card required." },
+        { title: "Build Your CV", desc: "Use our AI-powered chat to create an ATS-optimized German CV." },
+        { title: "Land Interviews", desc: "Export and apply with confidence knowing your CV meets German standards." },
+      ],
+      bottomTitle: "Start Creating Professional CVs Today",
+      bottomSub: "Join professionals who are landing more interviews with ATS-optimized German CVs",
+      faqTitle: "Frequently Asked Questions",
+      faqs: [
+        { q: "Is RoleGuide really free?", a: "Yes! You can create and export your first CV completely free. Premium features for advanced customization are coming soon." },
+        { q: "What makes a CV ATS-optimized?", a: "Our AI ensures your CV uses the right formatting, keywords, and structure that applicant tracking systems can read and rank highly." },
+        { q: "Do I need to know German?", a: "Not at all! While we optimize for the German job market, our interface is available in English and German, and we help you format everything correctly." },
+        { q: "When will cover letters be available?", a: "Cover letter generation and recruiter outreach features are currently in development and will be released soon." },
+      ],
       footerLogin: "Sign In",
       footerRegister: "Sign Up",
       footerDashboard: "Dashboard",
+      footerPrivacy: "Privacy Policy",
+      footerTerms: "Terms of Service",
     },
     de: {
-      titleTopBadge: "Früher Zugang",
-      title: "Erhalte frühen Zugang zu",
-      product: "LebenslaufPro AI",
+      title: "Erstelle ATS-optimierte Lebensläufe für den deutschen Arbeitsmarkt",
       subtitle:
-        "Sei unter den Ersten, die KI‑gestütztes Bewerbungs‑Management erleben. Trage dich in die Warteliste ein und erhalte Prioritätszugang.",
-      placeholder: "E-Mail-Adresse eingeben",
-      cta: "Warteliste beitreten",
+        "KI-gestützter Lebenslauf-Builder, der deutsche Einstellungsstandards versteht. Überwinde Bewerbungsmanagementsysteme und erhalte mehr Vorstellungsgespräche.",
+      ctaPrimary: "Lebenslauf erstellen",
+      ctaSecondary: "So funktioniert's",
       points: [
-        "Kein Spam",
-        "Priorisierter Zugang",
-        "Datenschutzorientiert",
+        "Kostenlos starten",
+        "ATS-optimiert",
+        "Deutscher Marktexperte",
       ],
       section1Title: "Eine KI, die den deutschen Arbeitsmarkt versteht",
       section1Sub: "Sprich mit deiner Karriere wie mit einem Partner. Wir analysieren Stellenanzeigen, passen deinen Lebenslauf an und formulieren Nachrichten, die bei Recruitern ankommen.",
@@ -111,22 +122,37 @@ export default function HomePage() {
       sec3Kicker: "MEHR ERLEDIGEN",
       sec3Title: "Hilfreiche Automatisierung",
       sec3Desc: "Ein Befehl erstellt einen deutschen Lebenslauf, schreibt ein passendes Anschreiben und bereitet Recruiter‑Nachrichten vor – mit Leitplanken.",
-      bottomTitle: "Sei ganz vorne dabei",
-      bottomSub: "Wir öffnen in Wellen. Trag dich ein und erhalte frühen Zugang, sobald Funktionen live gehen.",
+      demoAvailable: "Jetzt verfügbar: KI-gestützte Lebenslauf-Erstellung",
+      demoComingSoon: "Anschreiben & Recruiter-Kontakt demnächst verfügbar",
+      howItWorksTitle: "So funktioniert's",
+      howItWorksSub: "Erhalte deinen professionellen deutschen Lebenslauf in drei einfachen Schritten",
+      howItWorksSteps: [
+        { title: "Kostenlos anmelden", desc: "Erstelle dein Konto in Sekunden—keine Kreditkarte erforderlich." },
+        { title: "Lebenslauf erstellen", desc: "Nutze unseren KI-gestützten Chat für einen ATS-optimierten deutschen Lebenslauf." },
+        { title: "Vorstellungsgespräche erhalten", desc: "Exportiere und bewirb dich mit der Gewissheit, dass dein Lebenslauf deutschen Standards entspricht." },
+      ],
+      bottomTitle: "Erstelle noch heute professionelle Lebensläufe",
+      bottomSub: "Schließe dich Fachleuten an, die mehr Vorstellungsgespräche mit ATS-optimierten deutschen Lebensläufen erhalten",
+      faqTitle: "Häufig gestellte Fragen",
+      faqs: [
+        { q: "Ist RoleGuide wirklich kostenlos?", a: "Ja! Du kannst deinen ersten Lebenslauf völlig kostenlos erstellen und exportieren. Premium-Funktionen für erweiterte Anpassungen folgen bald." },
+        { q: "Was macht einen Lebenslauf ATS-optimiert?", a: "Unsere KI stellt sicher, dass dein Lebenslauf die richtige Formatierung, Schlüsselwörter und Struktur verwendet, die Bewerbermanagementsysteme lesen und hoch bewerten können." },
+        { q: "Muss ich Deutsch können?", a: "Überhaupt nicht! Während wir für den deutschen Arbeitsmarkt optimieren, ist unsere Oberfläche auf Englisch und Deutsch verfügbar und wir helfen dir, alles richtig zu formatieren." },
+        { q: "Wann werden Anschreiben verfügbar sein?", a: "Die Anschreiben-Generierung und Recruiter-Kontakt-Funktionen sind derzeit in Entwicklung und werden bald veröffentlicht." },
+      ],
       footerLogin: "Anmelden",
       footerRegister: "Registrieren",
       footerDashboard: "Dashboard",
+      footerPrivacy: "Datenschutz",
+      footerTerms: "Nutzungsbedingungen",
     },
   }[language];
 
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast({ variant: "destructive", title: "Invalid email" });
-      return;
+  function scrollToSection(id: string) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
-    toast({ title: "Thanks!", description: "You are on the waitlist." });
-    setEmail("");
   }
 
   return (
@@ -137,7 +163,7 @@ export default function HomePage() {
       <nav className="relative z-10 flex items-center justify-between px-6 py-6 lg:px-12">
         <div className="flex items-center gap-2">
           <Sparkles className="h-6 w-6 text-emerald-400" />
-          <span className="text-xl font-semibold text-white">LebenslaufPro</span>
+          <span className="text-xl font-semibold text-white">RoleGuide</span>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/90 px-2 py-1 text-sm backdrop-blur">
@@ -175,36 +201,31 @@ export default function HomePage() {
 
       <main className="relative z-10 px-6 pb-28 pt-16 lg:px-12 lg:pb-40 lg:pt-24">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="float-badge mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/95 px-4 py-2 text-sm font-medium shadow-sm backdrop-blur">
-            <Bell className="h-4 w-4 text-emerald-600" />
-            <span>{t.titleTopBadge}</span>
-            <span className="ml-2 inline-block h-2 w-2 rounded-full bg-emerald-500" />
-          </div>
           <h1 className="reveal mx-auto mb-6 max-w-3xl text-5xl font-extrabold tracking-tight text-white sm:text-7xl">
-            {t.title} <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent">{t.product}</span>
+            {t.title}
           </h1>
           <p className="reveal mx-auto mb-10 max-w-2xl text-xl text-white/90" style={{animationDelay:'120ms'}}>
             {t.subtitle}
           </p>
 
-          <form onSubmit={submit} className="reveal mx-auto flex max-w-xl flex-col items-stretch gap-3 sm:flex-row" style={{animationDelay:'220ms'}}>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t.placeholder}
-              className="input-glow h-12 flex-1 rounded-full border border-gray-200 bg-white/80 px-5 text-gray-900 placeholder-gray-400 shadow-sm outline-none backdrop-blur focus:border-gray-900 transition-transform duration-200 focus:scale-[1.01]"
-            />
+          <div className="reveal mx-auto flex max-w-xl flex-col items-stretch gap-3 sm:flex-row sm:justify-center" style={{animationDelay:'220ms'}}>
+            <Link href="/auth/register">
+              <button
+                className="ripple h-12 w-full sm:w-auto rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-8 font-semibold text-white shadow-lg transition hover:opacity-95 hover:scale-[1.05] hover:shadow-2xl"
+              >
+                <span className="inline-flex items-center gap-2">
+                  {t.ctaPrimary}
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              </button>
+            </Link>
             <button
-              type="submit"
-              className="ripple h-12 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 font-semibold text-white shadow-lg transition hover:opacity-95 hover:scale-[1.05] hover:shadow-2xl"
+              onClick={() => scrollToSection('how-it-works')}
+              className="ripple h-12 w-full sm:w-auto rounded-full border-2 border-white/30 bg-white/10 px-8 font-semibold text-white backdrop-blur transition hover:bg-white/20 hover:scale-[1.05]"
             >
-              <span className="inline-flex items-center gap-2">
-                {t.cta}
-                <ArrowRight className="h-4 w-4" />
-              </span>
+              {t.ctaSecondary}
             </button>
-          </form>
+          </div>
 
           <div className="mx-auto mt-6 flex max-w-xl flex-col items-center justify-center gap-6 sm:flex-row">
             {t.points.map((p, i) => (
@@ -217,11 +238,16 @@ export default function HomePage() {
         </div>
       </main>
       {/* Product explainer section */}
-      <section className="relative z-10 bg-slate-50 px-6 pt-16 pb-8 lg:px-12 lg:pt-20 lg:pb-14">
+      <section id="features" className="relative z-10 bg-slate-50 px-6 pt-16 pb-8 lg:px-12 lg:pt-20 lg:pb-14">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2">
           <div className="reveal rounded-3xl border border-emerald-200 bg-white p-6 shadow-lg backdrop-blur">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
-              <MessageSquare className="h-4 w-4" /> Live AI Demo
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-700">
+                <CheckCircle2 className="h-4 w-4" /> {t.demoAvailable}
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600">
+                <Clock className="h-4 w-4" /> {t.demoComingSoon}
+              </div>
             </div>
             <div className="rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 p-5 shadow-inner">
               <div className="mb-4 rounded-xl bg-white p-3 shadow-sm">
@@ -280,13 +306,64 @@ export default function HomePage() {
             <p className="text-gray-600">{t.sec3Desc}</p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {["Tailored Lebenslauf", "German cover letter", "Recruiter outreach"].map((title, i) => (
+            {[
+              { title: "Tailored Lebenslauf", available: true },
+              { title: "German cover letter", available: false },
+              { title: "Recruiter outreach", available: false }
+            ].map((item, i) => (
               <div key={i} className="reveal rounded-2xl border border-cyan-200 bg-white p-6 shadow-lg backdrop-blur transition-transform hover:-translate-y-1 hover:shadow-xl" style={{animationDelay:`${i*100}ms`}}>
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-cyan-100 px-3 py-1 text-sm font-medium text-cyan-700">
-                  <Zap className="h-4 w-4" /> Smart action
+                <div className={`mb-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
+                  item.available
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {item.available ? <CheckCircle2 className="h-4 w-4" /> : <Clock className="h-4 w-4" />}
+                  {item.available ? 'Available Now' : 'Coming Soon'}
                 </div>
-                <div className="font-semibold text-gray-900">{title}</div>
-                <div className="mt-2 text-sm text-gray-600">One prompt, ready to send. Tuned to German style and ATS.</div>
+                <div className="font-semibold text-gray-900">{item.title}</div>
+                <div className="mt-2 text-sm text-gray-600">
+                  {item.available
+                    ? 'Create ATS-optimized CVs tailored to German standards. Start now!'
+                    : 'One prompt, ready to send. Tuned to German style and ATS.'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works section */}
+      <section id="how-it-works" className="relative z-10 bg-white px-6 py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-12 text-center">
+            <h2 className="mb-2 text-4xl font-extrabold text-gray-900">{t.howItWorksTitle}</h2>
+            <p className="text-lg text-gray-600">{t.howItWorksSub}</p>
+          </div>
+          <div className="grid gap-8 sm:grid-cols-3">
+            {t.howItWorksSteps.map((step, i) => (
+              <div key={i} className="reveal text-center" style={{animationDelay:`${i*100}ms`}}>
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 text-2xl font-bold text-white shadow-lg">
+                  {i + 1}
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-gray-900">{step.title}</h3>
+                <p className="text-gray-600">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ section */}
+      <section className="relative z-10 bg-slate-50 px-6 py-20 lg:px-12 lg:py-28">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12 text-center">
+            <h2 className="mb-2 text-4xl font-extrabold text-gray-900">{t.faqTitle}</h2>
+          </div>
+          <div className="space-y-6">
+            {t.faqs.map((faq, i) => (
+              <div key={i} className="reveal rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md" style={{animationDelay:`${i*80}ms`}}>
+                <h3 className="mb-2 text-lg font-bold text-gray-900">{faq.q}</h3>
+                <p className="text-gray-600">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -294,24 +371,90 @@ export default function HomePage() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="relative z-10 bg-white px-6 pb-20 lg:px-12 lg:pb-28">
+      <section className="relative z-10 bg-gradient-to-br from-emerald-50 to-teal-50 px-6 py-20 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="mb-2 text-4xl font-extrabold text-gray-900">{t.bottomTitle}</h2>
-          <p className="mb-6 text-lg text-gray-600">{t.bottomSub}</p>
-          <form onSubmit={submit} className="mx-auto flex max-w-xl flex-col items-stretch gap-3 sm:flex-row">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t.placeholder}
-              className="input-glow h-12 flex-1 rounded-full border border-gray-200 bg-white/80 px-5 text-gray-900 placeholder-gray-400 shadow-sm outline-none backdrop-blur focus:border-gray-900"
-            />
-            <button type="submit" className="ripple h-12 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-6 font-semibold text-white shadow-lg transition hover:opacity-95 hover:scale-[1.05]">
-              <span className="inline-flex items-center gap-2">{t.cta}<ArrowRight className="h-4 w-4" /></span>
+          <p className="mb-8 text-lg text-gray-600">{t.bottomSub}</p>
+          <Link href="/auth/register">
+            <button className="ripple h-14 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 px-10 text-lg font-semibold text-white shadow-lg transition hover:opacity-95 hover:scale-[1.05] hover:shadow-2xl">
+              <span className="inline-flex items-center gap-2">
+                {t.ctaPrimary}
+                <ArrowRight className="h-5 w-5" />
+              </span>
             </button>
-          </form>
+          </Link>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="relative z-10 bg-slate-900 px-6 py-12 lg:px-12">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <div className="mb-4 flex items-center gap-2">
+                <Sparkles className="h-6 w-6 text-emerald-400" />
+                <span className="text-xl font-semibold text-white">RoleGuide</span>
+              </div>
+              <p className="text-sm text-gray-400">
+                AI-powered CV builder for the German job market
+              </p>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold text-white">Product</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="/auth/register" className="text-gray-400 hover:text-emerald-400 transition">
+                    {t.footerRegister}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/auth/login" className="text-gray-400 hover:text-emerald-400 transition">
+                    {t.footerLogin}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/dashboard/dashboard" className="text-gray-400 hover:text-emerald-400 transition">
+                    {t.footerDashboard}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold text-white">Resources</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <button onClick={() => scrollToSection('how-it-works')} className="text-gray-400 hover:text-emerald-400 transition">
+                    {t.howItWorksTitle}
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => scrollToSection('features')} className="text-gray-400 hover:text-emerald-400 transition">
+                    Features
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold text-white">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-emerald-400 transition">
+                    {t.footerPrivacy}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-emerald-400 transition">
+                    {t.footerTerms}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-12 border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; {new Date().getFullYear()} RoleGuide. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
 
       {/* Scroll progress */}
       <div id="scroll-progress" className="fixed left-0 top-0 z-50 h-1 w-0 bg-gradient-to-r from-emerald-500 to-sky-500" />

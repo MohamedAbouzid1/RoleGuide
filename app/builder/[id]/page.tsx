@@ -9,6 +9,8 @@ import { Toolbar } from '@/components/builder/Toolbar';
 import { useToast } from '@/components/ui/use-toast';
 import { CV, Evaluation } from '@/lib/types';
 import { draftsApi, pdfApi } from '@/lib/api-client';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function BuilderPage() {
     const params = useParams();
@@ -192,9 +194,18 @@ export default function BuilderPage() {
             isDirty={isDirty}
             evaluation={evaluation}
         />
-        
+
         <div className="flex flex-1 overflow-hidden">
             <div className="w-1/2 overflow-y-auto border-r p-6">
+            <div className="mb-4">
+                <Link
+                href="/dashboard/dashboard"
+                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                <ArrowLeft className="h-4 w-4" />
+                Zurück zum Dashboard
+                </Link>
+            </div>
             <CVForm evaluation={evaluation} />
             </div>
             <div className="w-1/2 overflow-y-auto bg-gray-50 p-6">

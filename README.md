@@ -1,6 +1,6 @@
-# LebenslaufPro
+# RoleGuide
 
-LebenslaufPro is a full-stack application for building, evaluating and exporting a German‑market CV. It features a Next.js frontend with a live builder interface and a separate Express.js backend API. The app includes instant preview, AI‑assisted evaluation (mocked for now), PDF export, JWT authentication and Prisma persistence.
+RoleGuide is a full-stack application for building, evaluating and exporting a German‑market CV. It features a Next.js frontend with a live builder interface and a separate Express.js backend API. The app includes instant preview, AI‑assisted evaluation (mocked for now), PDF export, JWT authentication and Prisma persistence.
 
 ## Features
 

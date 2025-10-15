@@ -1,7 +1,7 @@
 {
-  "name": "lebenslauf-pro-server",
+  "name": "roleguide-server",
   "version": "1.0.0",
-  "description": "Backend server for LebenslaufPro",
+  "description": "Backend server for RoleGuide",
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js",

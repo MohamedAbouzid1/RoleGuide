@@ -1,16 +1,18 @@
-# LebenslaufPro Backend Server
+# RoleGuide Backend Server
 
-Express.js backend (JavaScript/Node.js) for the LebenslaufPro CV builder application.
+Express.js backend (JavaScript/Node.js) for the RoleGuide CV builder application.
 
 ## Setup
 
 ### Prerequisites
+
 - Node.js 20+ and pnpm (or npm)
 - PostgreSQL database
 
 ### Installation
 
 1. **Install dependencies**
+
    ```bash
    cd server
    pnpm install
@@ -18,11 +20,13 @@ Express.js backend (JavaScript/Node.js) for the LebenslaufPro CV builder applica
    ```
 
 2. **Configure environment variables**
+
    ```bash
    cp .env.example .env
    ```
 
    Edit `.env` and set:
+
    ```
    DATABASE_URL=postgresql://user:password@localhost:5432/lebenslaufpro
    JWT_SECRET=your-secret-key-here
@@ -32,6 +36,7 @@ Express.js backend (JavaScript/Node.js) for the LebenslaufPro CV builder applica
    ```
 
 3. **Setup database**
+
    ```bash
    pnpm db:push
    # or for migrations
@@ -39,6 +44,7 @@ Express.js backend (JavaScript/Node.js) for the LebenslaufPro CV builder applica
    ```
 
 4. **Start the server**
+
    ```bash
    # Development mode (with hot reload via nodemon)
    pnpm dev
@@ -52,11 +58,13 @@ The server will run on `http://localhost:4000` by default.
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user (returns JWT token)
 - `GET /api/auth/session` - Get current user session (requires auth)
 
 ### Drafts
+
 All draft endpoints require `Authorization: Bearer <token>` header.
 
 - `GET /api/drafts` - Get all user drafts
@@ -68,6 +76,7 @@ All draft endpoints require `Authorization: Bearer <token>` header.
 - `POST /api/drafts/:id/snapshot` - Create snapshot
 
 ### PDF Export
+
 - `POST /api/pdf/export` - Export CV as PDF (requires auth)
 
 ## Project Structure
@@ -97,16 +106,19 @@ server/
 ## Development Notes
 
 ### Authentication
+
 - Uses JWT tokens instead of NextAuth sessions
 - Token stored in localStorage on frontend
 - Token sent in `Authorization: Bearer <token>` header
 
 ### Database
+
 - Shares the same PostgreSQL database with the frontend
 - Uses Prisma ORM
 - Run migrations from the server directory
 
 ### CORS
+
 - Configured to allow requests from `FRONTEND_URL` (default: http://localhost:3000)
 - Credentials enabled for cookie support if needed
 
