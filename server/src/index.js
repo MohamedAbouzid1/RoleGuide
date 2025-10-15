@@ -5,6 +5,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const draftsRoutes = require('./routes/drafts');
 const pdfRoutes = require('./routes/pdf');
+const { prisma } = require('./config/database');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -20,6 +21,26 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Database connectivity health check (does NOT expose secrets)
+app.get('/health/db', async (req, res) => {
+  const dbUrl = process.env.DATABASE_URL || '';
+  let dbHost = 'unknown';
+  try {
+    if (dbUrl) {
+      const u = new URL(dbUrl);
+      dbHost = u.host;
+    }
+  } catch (_) {}
+
+  try {
+    // Simple connectivity probe
+    await prisma.$queryRaw`SELECT 1`;
+    return res.json({ status: 'ok', dbHost });
+  } catch (err) {
+    return res.status(500).json({ status: 'error', dbHost, message: err?.message || 'DB connection failed' });
+  }
 });
 
 // Routes

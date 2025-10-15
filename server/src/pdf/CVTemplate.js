@@ -1,58 +1,78 @@
 const React = require('react');
 const { Document, Page, Text, View, StyleSheet, Font, Image, Link } = require('@react-pdf/renderer');
 
-// Register fonts - using Helvetica which is built-in and similar to Calibri
+// Register Roboto as a fallback (close to Calibri)
 Font.register({
-  family: 'Helvetica',
+  family: 'Roboto',
   fonts: [
-    { src: 'Helvetica', fontWeight: 'normal' },
-    { src: 'Helvetica-Bold', fontWeight: 'bold' },
+    {
+      src: 'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf',
+      fontWeight: 'normal'
+    },
+    {
+      src: 'https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmWUlvAx05IsDqlA.ttf',
+      fontWeight: 'bold'
+    },
+    {
+      src: 'https://fonts.gstatic.com/s/roboto/v30/KFOkCnqEu92Fr1Mu52xPKTM1K9nz.ttf',
+      fontStyle: 'italic',
+      fontWeight: 'normal'
+    },
+    {
+      src: 'https://fonts.gstatic.com/s/roboto/v30/KFOjCnqEu92Fr1Mu51TzBhc9AMX6lJBP.ttf',
+      fontStyle: 'italic',
+      fontWeight: 'bold'
+    },
   ],
 });
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'Helvetica',
+    fontFamily: 'Roboto',
     fontSize: 11,
     padding: '18mm',
     lineHeight: 1.5,
   },
   // Header
   header: {
-    marginBottom: 24,
-    paddingBottom: 8,
+    marginBottom: 16,
+    paddingBottom: 6,
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 24,
+    alignItems: 'flex-start',
+    gap: 16,
   },
   headerLeft: {
     flex: 1,
   },
   name: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: 'ultrabold',
     color: '#111827',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   role: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: 'semibold',
     color: '#374151',
-    marginTop: 4,
+    marginTop: 2,
   },
   contactGrid: {
-    marginTop: 16,
+    marginTop: 12,
+    flexDirection: 'column',
+    gap: 4,
   },
   contactRow: {
     flexDirection: 'row',
-    marginBottom: 4,
+    gap: 8,
+    alignItems: 'flex-start',
   },
   contactLabel: {
     width: 140,
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: 'semibold',
     fontStyle: 'italic',
     color: '#374151',
   },
@@ -71,19 +91,20 @@ const styles = StyleSheet.create({
     height: 110,
     border: '1px solid #d1d5db',
     borderRadius: 2,
+    objectFit: 'cover',
   },
   // Sections
   section: {
-    marginBottom: 24,
+    marginBottom: 18,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: 'ultrabold',
     textTransform: 'uppercase',
     letterSpacing: 1.5,
     color: '#111827',
@@ -93,7 +114,7 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: '#1f2937',
     flex: 1,
-    marginLeft: 16,
+    marginLeft: 12,
   },
   // Profile section
   profileText: {
@@ -103,11 +124,11 @@ const styles = StyleSheet.create({
   },
   // Experience & Education - 2 column grid
   entryContainer: {
-    marginBottom: 16,
+    marginBottom: 12,
   },
   entryGrid: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
   },
   entryLeft: {
     width: 170,
@@ -142,7 +163,7 @@ const styles = StyleSheet.create({
   },
   // Skills
   skillCategory: {
-    marginBottom: 12,
+    marginBottom: 10,
   },
   skillCategoryTitle: {
     fontSize: 12,
@@ -152,26 +173,30 @@ const styles = StyleSheet.create({
   },
   skillGrid: {
     marginTop: 4,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
   },
   skillRow: {
+    width: '45%',
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
-    gap: 12,
+    marginBottom: 6,
+    gap: 10,
   },
   skillName: {
-    width: 160,
+    width: 140,
     fontSize: 12,
     color: '#1f2937',
   },
   skillDots: {
     flexDirection: 'row',
-    gap: 4,
+    gap: 2,
   },
   skillDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   skillDotFilled: {
     backgroundColor: '#111827',
@@ -184,16 +209,16 @@ const styles = StyleSheet.create({
   languagesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 12,
   },
   languageItem: {
-    width: '48%',
+    width: '45%',
     fontSize: 12,
     color: '#111827',
     marginBottom: 4,
   },
   languageName: {
-    fontWeight: 'bold',
+    fontWeight: 'semibold',
   },
   // Closing/Signature
   closingSection: {
@@ -261,18 +286,12 @@ function CVTemplate({ cv }) {
                 { style: styles.contactRow },
                 React.createElement(Text, { style: styles.contactLabel }, 'Adresse'),
                 React.createElement(
-                  View,
+                  Text,
                   { style: styles.contactValue },
-                  React.createElement(
-                    Text,
-                    null,
-                    [cv.personal.address?.street, cv.personal.address?.postalCode].filter(Boolean).join(', ')
-                  ),
-                  React.createElement(
-                    Text,
-                    null,
+                  [
+                    [cv.personal.address?.street, cv.personal.address?.postalCode].filter(Boolean).join(', '),
                     [cv.personal.address?.city, cv.personal.address?.country].filter(Boolean).join(', ')
-                  )
+                  ].filter(Boolean).join('\n')
                 )
               ),
               // Links
@@ -281,23 +300,13 @@ function CVTemplate({ cv }) {
                 { style: styles.contactRow },
                 React.createElement(Text, { style: styles.contactLabel }, 'Links'),
                 React.createElement(
-                  View,
-                  { style: [styles.contactValue, { flexDirection: 'row', gap: 12 }] },
-                  cv.personal.websiteUrl && React.createElement(
-                    Link,
-                    { src: cv.personal.websiteUrl, style: styles.linkText },
-                    'Website'
-                  ),
-                  cv.personal.linkedinUrl && React.createElement(
-                    Link,
-                    { src: cv.personal.linkedinUrl, style: styles.linkText },
-                    'LinkedIn'
-                  ),
-                  cv.personal.githubUrl && React.createElement(
-                    Link,
-                    { src: cv.personal.githubUrl, style: styles.linkText },
-                    'GitHub'
-                  )
+                  Text,
+                  { style: styles.contactValue },
+                  [
+                    cv.personal.websiteUrl && 'Website',
+                    cv.personal.linkedinUrl && 'LinkedIn',
+                    cv.personal.githubUrl && 'GitHub'
+                  ].filter(Boolean).join(' • ')
                 )
               )
             )
@@ -343,21 +352,23 @@ function CVTemplate({ cv }) {
             React.createElement(
               View,
               { style: styles.entryGrid },
-              React.createElement(
-                Text,
-                { style: styles.entryLeft },
-                `${exp.start} – ${exp.end || 'laufend'}`
-              ),
+                React.createElement(
+                  Text,
+                  { style: styles.entryLeft },
+                  `${exp.start || ''} – ${exp.end || 'laufend'}`
+                ),
               React.createElement(
                 View,
                 { style: styles.entryRight },
                 React.createElement(
                   Text,
                   { style: styles.entryTitle },
-                  React.createElement(Text, { style: { fontWeight: 'bold' } }, exp.role),
-                  ' bei ',
-                  React.createElement(Text, { style: { fontWeight: 'bold' } }, exp.company),
-                  exp.city ? `, ${exp.city}` : ''
+                  [
+                    React.createElement(Text, { key: 'role', style: { fontWeight: 'semibold' } }, exp.role || ''),
+                    ' bei ',
+                    React.createElement(Text, { key: 'company', style: { fontWeight: 'bold' } }, exp.company || ''),
+                    exp.city ? `, ${exp.city}` : null
+                  ].filter(Boolean)
                 ),
                 exp.bullets && exp.bullets.length > 0 && React.createElement(
                   View,
@@ -404,12 +415,12 @@ function CVTemplate({ cv }) {
                 React.createElement(
                   Text,
                   { style: [styles.entryTitle, { fontWeight: 'bold' }] },
-                  edu.degree
+                  edu.degree || ''
                 ),
                 React.createElement(
                   Text,
                   { style: styles.entrySubtext },
-                  `${edu.school}${edu.city ? `, ${edu.city}` : ''}`
+                  `${edu.school || ''}${edu.city ? `, ${edu.city}` : ''}`
                 )
               )
             )
@@ -439,28 +450,28 @@ function CVTemplate({ cv }) {
             React.createElement(
               View,
               { style: styles.skillGrid },
-              ...cat.items.map((item, j) =>
-                React.createElement(
+              ...cat.items.map((item, j) => {
+                const filled = (level) => item.level >= level * 10;
+                return React.createElement(
                   View,
                   { key: j, style: styles.skillRow },
                   React.createElement(
                     Text,
                     { style: styles.skillName },
-                    item.name
+                    item.name || ''
                   ),
                   React.createElement(
                     View,
                     { style: styles.skillDots },
-                    ...Array.from({ length: 10 }).map((_, k) => {
-                      const filled = item.level >= (k + 1) * 10;
-                      return React.createElement(View, {
+                    ...Array.from({ length: 10 }).map((_, k) =>
+                      React.createElement(View, {
                         key: k,
-                        style: filled ? [styles.skillDot, styles.skillDotFilled] : [styles.skillDot, styles.skillDotEmpty],
-                      });
-                    })
+                        style: filled(k + 1) ? [styles.skillDot, styles.skillDotFilled] : [styles.skillDot, styles.skillDotEmpty],
+                      })
+                    )
                   )
-                )
-              )
+                );
+              })
             )
           )
         )
@@ -483,8 +494,10 @@ function CVTemplate({ cv }) {
             React.createElement(
               Text,
               { key: i, style: styles.languageItem },
-              React.createElement(Text, { style: styles.languageName }, lang.name),
-              `: ${lang.level}`
+              [
+                React.createElement(Text, { key: 'name', style: styles.languageName }, lang.name || ''),
+                lang.level ? `: ${lang.level}` : null
+              ].filter(Boolean)
             )
           )
         )
@@ -513,7 +526,7 @@ function CVTemplate({ cv }) {
           React.createElement(
             Text,
             { style: styles.datePlaceText },
-            [cv.closing?.place, cv.closing?.date].filter(Boolean).join(', ')
+            [cv.closing?.place, cv.closing?.date].filter(Boolean).join(', ') || ''
           )
         )
       )
