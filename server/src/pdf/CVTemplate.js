@@ -73,9 +73,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   nameRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 12,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     marginBottom: 12,
   },
   name: {
@@ -84,10 +83,11 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   role: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'normal',
-    color: '#000000',
+    color: '#666666',
     fontStyle: 'italic',
+    marginTop: 2,
   },
   contactGrid: {
     flexDirection: 'row',
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   },
   // Sections
   section: {
-    marginBottom: 12,
+    marginBottom: 10,
   },
   sectionHeader: {
     marginBottom: 6,
@@ -149,14 +149,14 @@ const styles = StyleSheet.create({
   },
   // Experience & Education - 2 column grid
   entryContainer: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   entryGrid: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 8,
   },
   entryLeft: {
-    width: 170,
+    width: 150,
     fontSize: 12,
     color: '#000000',
   },
@@ -270,7 +270,7 @@ function CVTemplate({ cv }) {
           React.createElement(
             View,
             { style: styles.headerLeft },
-            // Name and role on same line
+            // Name and role in column layout
             React.createElement(
               View,
               { style: styles.nameRow },
@@ -320,12 +320,6 @@ function CVTemplate({ cv }) {
                   { style: styles.contactRow },
                   React.createElement(PhoneIcon),
                   React.createElement(Text, { style: styles.contactValue }, cv.personal.phone)
-                ),
-                React.createElement(
-                  View,
-                  { style: styles.contactRow },
-                  React.createElement(LanguageIcon),
-                  React.createElement(Text, { style: styles.contactValue }, 'Deutsch')
                 ),
                 cv.personal?.nationality && React.createElement(
                   View,
@@ -523,7 +517,7 @@ function CVTemplate({ cv }) {
       ),
 
       // Internships/Praktika
-      React.createElement(
+      cv.internships && cv.internships.length > 0 && React.createElement(
         View,
         { style: styles.section },
         React.createElement(
@@ -532,27 +526,30 @@ function CVTemplate({ cv }) {
           React.createElement(Text, { style: styles.sectionTitle }, 'Praktika'),
           React.createElement(View, { style: styles.sectionLine })
         ),
-        React.createElement(
-          View,
-          { style: styles.entryContainer },
+        ...cv.internships.map((internship, i) =>
           React.createElement(
             View,
-            { style: styles.entryGrid },
-            React.createElement(
-              Text,
-              { style: styles.entryLeft },
-              '10.2024 - 12.2024\nHamburg'
-            ),
+            { style: styles.entryContainer },
             React.createElement(
               View,
-              { style: styles.entryRight },
-              React.createElement(Text, { style: styles.entryTitle }, 'Master Student'),
-              React.createElement(Text, { style: styles.entryCompany }, 'Hamburg Center for Translational Immunology (UKE)'),
+              { style: styles.entryGrid },
+              React.createElement(
+                Text,
+                { style: styles.entryLeft },
+                `${internship.start} - ${internship.end || 'Heute'}${internship.city ? `\n${internship.city}` : ''}`
+              ),
               React.createElement(
                 View,
-                { style: styles.bulletList },
-                React.createElement(Text, { style: styles.bullet }, '• Entwicklung von Datenverarbeitungspipelines für Single-Cell-RNA-Seq-Analysen'),
-                React.createElement(Text, { style: styles.bullet }, '• Python-Programmierung mit Pandas, NumPy, Scanpy für biologische Datenanalyse')
+                { style: styles.entryRight },
+                React.createElement(Text, { style: styles.entryTitle }, internship.role),
+                React.createElement(Text, { style: styles.entryCompany }, internship.company),
+                internship.bullets.length > 0 && React.createElement(
+                  View,
+                  { style: styles.bulletList },
+                  ...internship.bullets.map((bullet, j) =>
+                    React.createElement(Text, { key: j, style: styles.bullet }, `• ${bullet}`)
+                  )
+                )
               )
             )
           )

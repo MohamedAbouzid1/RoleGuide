@@ -11,6 +11,7 @@ import {
 import { PersonalSection } from './sections/PersonalSection';
 import { ProfileSection } from './sections/ProfileSection';
 import { ExperienceSection } from './sections/ExperienceSection';
+import { InternshipsSection } from './sections/InternshipsSection';
 import { EducationSection } from './sections/EducationSection';
 import { SkillsSection } from './sections/SkillsSection';
 import { LanguagesSection } from './sections/LanguagesSection';
@@ -74,6 +75,22 @@ export function CVForm({ evaluation }: CVFormProps) {
           </AccordionTrigger>
           <AccordionContent>
             <ExperienceSection evaluation={evaluation} />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="internships">
+          <AccordionTrigger>
+            <div className="flex items-center justify-between w-full mr-4">
+              <span>Praktika</span>
+              <Switch
+                checked={sectionVisibility.internships}
+                onCheckedChange={() => toggleSection('internships')}
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            <InternshipsSection evaluation={evaluation} />
           </AccordionContent>
         </AccordionItem>
 

@@ -106,9 +106,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   nameRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 12,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     marginBottom: 12,
   },
   name: {
@@ -117,10 +116,11 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   role: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'normal',
-    color: '#000000',
+    color: '#666666',
     fontStyle: 'italic',
+    marginTop: 2,
   },
   photo: {
     width: 110,
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
   },
   section: {
-    marginBottom: 12,
+    marginBottom: 10,
   },
   sectionHeader: {
     marginBottom: 6,
@@ -175,11 +175,11 @@ const styles = StyleSheet.create({
   },
   experienceItem: {
     flexDirection: 'row',
-    marginBottom: 10,
-    gap: 16,
+    marginBottom: 8,
+    gap: 8,
   },
   dateColumn: {
-    width: 170,
+    width: 150,
     fontSize: 12,
     color: '#000000',
   },
@@ -212,8 +212,8 @@ const styles = StyleSheet.create({
   },
   educationItem: {
     flexDirection: 'row',
-    marginBottom: 10,
-    gap: 16,
+    marginBottom: 8,
+    gap: 8,
   },
   degree: {
     fontSize: 12,
@@ -334,10 +334,6 @@ export function CVTemplate({ cv }: CVTemplateProps) {
                     <Text style={styles.contactValue}>{cv.personal.phone}</Text>
                   </View>
                 )}
-                <View style={styles.contactRow}>
-                  <LanguageIcon />
-                  <Text style={styles.contactValue}>Deutsch</Text>
-                </View>
                 {cv.personal.nationality && (
                   <View style={styles.contactRow}>
                     <LanguageIcon />
@@ -481,25 +477,33 @@ export function CVTemplate({ cv }: CVTemplateProps) {
         )}
 
         {/* Internships */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Praktika</Text>
-            <View style={styles.sectionLine} />
-          </View>
-          <View style={styles.experienceItem}>
-            <Text style={styles.dateColumn}>
-              10.2024 - 12.2024{'\n'}Hamburg
-            </Text>
-            <View style={styles.contentColumn}>
-              <Text style={styles.jobTitle}>Master Student</Text>
-              <Text style={styles.company}>Hamburg Center for Translational Immunology (UKE)</Text>
-              <View style={styles.bulletList}>
-                <Text style={styles.bullet}>• Entwicklung von Datenverarbeitungspipelines für Single-Cell-RNA-Seq-Analysen</Text>
-                <Text style={styles.bullet}>• Python-Programmierung mit Pandas, NumPy, Scanpy für biologische Datenanalyse</Text>
-              </View>
+        {cv.internships && cv.internships.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Praktika</Text>
+              <View style={styles.sectionLine} />
             </View>
+            {cv.internships.map((internship, i) => (
+              <View key={i} style={styles.experienceItem}>
+                <Text style={styles.dateColumn}>
+                  {internship.start} - {internship.end || 'Heute'}
+                  {internship.city && `\n${internship.city}`}
+                </Text>
+                <View style={styles.contentColumn}>
+                  <Text style={styles.jobTitle}>{internship.role}</Text>
+                  <Text style={styles.company}>{internship.company}</Text>
+                  {internship.bullets.length > 0 && (
+                    <View style={styles.bulletList}>
+                      {internship.bullets.map((bullet, j) => (
+                        <Text key={j} style={styles.bullet}>• {bullet}</Text>
+                      ))}
+                    </View>
+                  )}
+                </View>
+              </View>
+            ))}
           </View>
-        </View>
+        )}
 
         {/* Languages */}
         {cv.languages.length > 0 && (

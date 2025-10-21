@@ -17,13 +17,13 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
         <header className="mb-6 pb-2">
           <div className="flex items-start justify-between gap-6">
             <div className="flex-1">
-              {/* Name and title on same line */}
-              <div className="flex items-baseline gap-4 mb-4">
+              {/* Name and title in column layout */}
+              <div className="flex flex-col mb-4">
                 <h1 className="text-[28px] font-bold text-black">
                   {cv.personal.fullName || 'Ihr Name'}
                 </h1>
                 {cv.personal.role && (
-                  <span className="text-[14px] font-normal text-black italic">
+                  <span className="text-[12px] font-normal text-gray-600 italic mt-1">
                     {cv.personal.role}
                   </span>
                 )}
@@ -64,10 +64,6 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
                       <span>{cv.personal.phone}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2">
-                    <MdLanguage className="text-[12px] text-black" />
-                    <span>Deutsch</span>
-                  </div>
                   {cv.personal.nationality && (
                     <div className="flex items-center gap-2">
                       <MdLanguage className="text-[12px] text-black" />
@@ -97,7 +93,7 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
 
       {/* Profile */}
       {sectionVisibility.profile && cv.profile?.summary && (
-        <section className="mb-6">
+        <section className="mb-4">
           <div className="mb-2">
             <h2 className="text-[14px] font-bold text-black mb-1">Profil</h2>
             <div className="h-[1px] w-full bg-black"></div>
@@ -110,12 +106,12 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
 
       {/* Software Projects */}
       {sectionVisibility.projects && cv.projects && cv.projects.length > 0 && (
-        <section className="mb-6">
+        <section className="mb-4">
           <div className="mb-2">
             <h2 className="text-[14px] font-bold text-black mb-1">Softwareprojekte</h2>
             <div className="h-[1px] w-full bg-black"></div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {cv.projects.map((project, i) => (
               <div key={i}>
                 <div className="text-[12px] text-black mb-1">{project.date || '2025'}</div>
@@ -139,7 +135,7 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
 
       {/* Experience */}
       {sectionVisibility.experience && (
-        <section className="mb-6">
+        <section className="mb-4">
           <div className="mb-2">
             <h2 className="text-[14px] font-bold text-black mb-1">Berufserfahrung</h2>
             <div className="h-[1px] w-full bg-black"></div>
@@ -147,7 +143,7 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
           {cv.experience.length === 0 && (
             <div className="text-sm text-gray-500">Noch keine Einträge</div>
           )}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {cv.experience.map((exp, i) => (
               <div key={i} className="grid grid-cols-[170px_1fr] gap-4">
                 <div className="text-[12px] text-black">
@@ -176,7 +172,7 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
 
       {/* Education */}
       {sectionVisibility.education && (
-        <section className="mb-6">
+        <section className="mb-4">
           <div className="mb-2">
             <h2 className="text-[14px] font-bold text-black mb-1">Ausbildung</h2>
             <div className="h-[1px] w-full bg-black"></div>
@@ -184,7 +180,7 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
           {cv.education.length === 0 && (
             <div className="text-sm text-gray-500">Noch keine Einträge</div>
           )}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {cv.education.map((edu, i) => (
               <div key={i} className="grid grid-cols-[170px_1fr] gap-4">
                 <div className="text-[12px] text-black">
@@ -210,7 +206,7 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
 
       {/* Technical Skills */}
       {sectionVisibility.skills && cv.skills.length > 0 && (
-        <section className="mb-6">
+        <section className="mb-4">
           <div className="mb-2">
             <h2 className="text-[14px] font-bold text-black mb-1">Technische Kenntnisse</h2>
             <div className="h-[1px] w-full bg-black"></div>
@@ -239,41 +235,43 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
         </section>
       )}
 
-      {/* Internships/Practical Experience */}
-      {sectionVisibility.experience && (
-        <section className="mb-6">
+      {/* Internships */}
+      {sectionVisibility.internships && cv.internships && cv.internships.length > 0 && (
+        <section className="mb-4">
           <div className="mb-2">
             <h2 className="text-[14px] font-bold text-black mb-1">Praktika</h2>
             <div className="h-[1px] w-full bg-black"></div>
           </div>
-          <div className="space-y-4">
-            <div className="grid grid-cols-[170px_1fr] gap-4">
-              <div className="text-[12px] text-black">
-                10.2024 - 12.2024
-                <div>Hamburg</div>
+          <div className="space-y-3">
+            {cv.internships.map((internship, i) => (
+              <div key={i} className="grid grid-cols-[150px_1fr] gap-2">
+                <div className="text-[12px] text-black">
+                  {internship.start} - {internship.end || 'Heute'}
+                  {internship.city && <div>{internship.city}</div>}
+                </div>
+                <div>
+                  <div className="text-[12px] font-bold text-black mb-1">{internship.role}</div>
+                  <div className="text-[12px] text-black mb-2 italic">{internship.company}</div>
+                  {internship.bullets.length > 0 && (
+                    <ul className="text-[12px] text-black ml-4 space-y-1">
+                      {internship.bullets.map((bullet, j) => (
+                        <li key={j} className="flex items-start">
+                          <span className="mr-2">•</span>
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
-              <div>
-                <div className="text-[12px] font-bold text-black mb-1">Master Student</div>
-                <div className="text-[12px] text-black mb-2 italic">Hamburg Center for Translational Immunology (UKE)</div>
-                <ul className="text-[12px] text-black ml-4 space-y-1">
-                  <li className="flex items-start">
-                    <span className="mr-2">•</span>
-                    <span>Entwicklung von Datenverarbeitungspipelines für Single-Cell-RNA-Seq-Analysen</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="mr-2">•</span>
-                    <span>Python-Programmierung mit Pandas, NumPy, Scanpy für biologische Datenanalyse</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            ))}
           </div>
         </section>
       )}
 
       {/* Languages */}
       {sectionVisibility.languages && cv.languages.length > 0 && (
-        <section className="mb-6">
+        <section className="mb-4">
           <div className="mb-2">
             <h2 className="text-[14px] font-bold text-black mb-1">Sprachen</h2>
             <div className="h-[1px] w-full bg-black"></div>

@@ -38,6 +38,14 @@ export type CV = {
       graduation?: string; // "MM.YYYY"
       notes?: string[];
     }[];
+    internships: {
+      role: string;
+      company: string;
+      city?: string;
+      start: string; // "MM.YYYY"
+      end?: string; // "MM.YYYY"
+      bullets: string[];
+    }[];
     skills: { category: string; items: { name: string; level: number }[] }[];
     languages: { name: string; level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" }[];
     certificates?: { name: string; issuer?: string; date?: string }[];
@@ -71,6 +79,7 @@ export type CV = {
     profile: boolean;
     experience: boolean;
     education: boolean;
+    internships: boolean;
     skills: boolean;
     languages: boolean;
     certificates: boolean;
