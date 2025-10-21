@@ -30,7 +30,7 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
               </div>
               
               {/* Contact info in two-column grid with icons */}
-              <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-[12px] text-black">
+              <div className="grid grid-cols-2 gap-x-16 gap-y-2 text-[12px] text-black">
                 {/* Left column */}
                 <div className="space-y-2">
                   {cv.personal.email && (
@@ -44,7 +44,7 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
                       <MdLocationOn className="text-[12px] text-black" />
                       <span>
                         {[cv.personal.address?.street, cv.personal.address?.postalCode].filter(Boolean).join(', ')}
-                        {cv.personal.address?.city && `, ${cv.personal.address.city}`}
+                        {cv.personal.address?.city && ` ${cv.personal.address.city}`}
                       </span>
                     </div>
                   )}
@@ -118,10 +118,10 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
                 <div className="text-[12px] font-bold text-black mb-1">{project.name}</div>
                 <div className="text-[12px] text-black mb-2 italic">{project.description}</div>
                 {project.bullets && project.bullets.length > 0 && (
-                  <ul className="text-[12px] text-black ml-4 space-y-1">
+                  <ul className="text-[12px] text-black space-y-1">
                     {project.bullets.map((bullet, j) => (
                       <li key={j} className="flex items-start">
-                        <span className="mr-2">•</span>
+                        <span className="mr-1">•</span>
                         <span>{bullet}</span>
                       </li>
                     ))}
@@ -154,10 +154,10 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
                   <div className="text-[12px] font-bold text-black mb-1">{exp.role}</div>
                   <div className="text-[12px] text-black mb-2 italic">{exp.company}</div>
                   {exp.bullets.length > 0 && (
-                    <ul className="text-[12px] text-black ml-4 space-y-1">
+                    <ul className="text-[12px] text-black space-y-1">
                       {exp.bullets.map((bullet, j) => (
                         <li key={j} className="flex items-start">
-                          <span className="mr-2">•</span>
+                          <span className="mr-1">•</span>
                           <span>{bullet}</span>
                         </li>
                       ))}
@@ -253,10 +253,10 @@ export function CVPreview({ cv, sectionVisibility }: CVPreviewProps) {
                   <div className="text-[12px] font-bold text-black mb-1">{internship.role}</div>
                   <div className="text-[12px] text-black mb-2 italic">{internship.company}</div>
                   {internship.bullets.length > 0 && (
-                    <ul className="text-[12px] text-black ml-4 space-y-1">
+                    <ul className="text-[12px] text-black space-y-1">
                       {internship.bullets.map((bullet, j) => (
                         <li key={j} className="flex items-start">
-                          <span className="mr-2">•</span>
+                          <span className="mr-1">•</span>
                           <span>{bullet}</span>
                         </li>
                       ))}

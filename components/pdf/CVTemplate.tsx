@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Font, PDFViewer, Image, Svg, Path } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Font, PDFViewer, Image, Svg, Path, Link } from '@react-pdf/renderer';
 import { CV } from '@/lib/types';
 
 // SVG Icon components for PDF
@@ -91,9 +91,9 @@ Font.register({
 const styles = StyleSheet.create({
   page: {
     fontFamily: 'Calibri',
-    fontSize: 11,
-    padding: '18mm',
-    lineHeight: 1.5,
+    fontSize: 11.5,
+    padding: '16mm',
+    lineHeight: 1.4,
   },
   header: {
     marginBottom: 16,
@@ -108,29 +108,29 @@ const styles = StyleSheet.create({
   nameRow: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   name: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#000000',
   },
   role: {
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: 'normal',
     color: '#666666',
     fontStyle: 'italic',
     marginTop: 2,
   },
   photo: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     border: '1px solid #000000',
   },
   contactGrid: {
     flexDirection: 'row',
-    gap: 32,
+    gap: 40,
   },
   contactColumn: {
     flex: 1,
@@ -138,11 +138,11 @@ const styles = StyleSheet.create({
   },
   contactRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
     alignItems: 'center',
   },
   contactIcon: {
-    fontSize: 8,
+    fontSize: 14,
     color: '#000000',
     fontWeight: 'bold',
   },
@@ -152,34 +152,35 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
   },
   section: {
-    marginBottom: 10,
+    marginBottom: 16,
   },
   sectionHeader: {
-    marginBottom: 6,
+    marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#000000',
     marginBottom: 4,
   },
   sectionLine: {
-    height: 1,
+    height: 1.5,
     backgroundColor: '#000000',
     width: '100%',
   },
   profileText: {
     fontSize: 12,
     color: '#000000',
-    lineHeight: 1.3,
+    lineHeight: 1.35,
+    paddingTop: 4,
   },
   experienceItem: {
     flexDirection: 'row',
-    marginBottom: 8,
-    gap: 8,
+    marginBottom: 14,
+    gap: 12,
   },
   dateColumn: {
-    width: 150,
+    width: 120,
     fontSize: 12,
     color: '#000000',
   },
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     color: '#000000',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   company: {
     fontSize: 12,
@@ -205,21 +206,21 @@ const styles = StyleSheet.create({
   bullet: {
     fontSize: 12,
     color: '#000000',
-    marginBottom: 2,
-    lineHeight: 1.4,
-    textIndent: -8,
-    paddingLeft: 8,
+    marginBottom: 3,
+    lineHeight: 1.35,
+    textIndent: -10,
+    paddingLeft: 10,
   },
   educationItem: {
     flexDirection: 'row',
-    marginBottom: 8,
-    gap: 8,
+    marginBottom: 14,
+    gap: 12,
   },
   degree: {
     fontSize: 12,
     fontWeight: 'bold',
     color: '#000000',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   school: {
     fontSize: 12,
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
   },
   skillsGrid: {
     flexDirection: 'row',
-    gap: 32,
+    gap: 24,
   },
   skillColumn: {
     flex: 1,
@@ -246,11 +247,11 @@ const styles = StyleSheet.create({
   skillItem: {
     fontSize: 12,
     color: '#000000',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   languagesGrid: {
     flexDirection: 'row',
-    gap: 32,
+    gap: 24,
   },
   language: {
     fontSize: 12,
@@ -314,14 +315,14 @@ export function CVTemplate({ cv }: CVTemplateProps) {
                     <LocationIcon />
                     <Text style={styles.contactValue}>
                       {[cv.personal.address?.street, cv.personal.address?.postalCode].filter(Boolean).join(', ')}
-                      {cv.personal.address?.city && `, ${cv.personal.address.city}`}
+                      {cv.personal.address?.city && ` ${cv.personal.address.city}`}
                     </Text>
                   </View>
                 )}
                 {cv.personal.linkedinUrl && (
                   <View style={styles.contactRow}>
                     <LinkedInIcon />
-                    <Text style={styles.contactValue}>LinkedIn</Text>
+                    <Link src={cv.personal.linkedinUrl} style={styles.contactValue}>LinkedIn</Link>
                   </View>
                 )}
               </View>
@@ -343,7 +344,7 @@ export function CVTemplate({ cv }: CVTemplateProps) {
                 {cv.personal.githubUrl && (
                   <View style={styles.contactRow}>
                     <GitHubIcon />
-                    <Text style={styles.contactValue}>GitHub</Text>
+                    <Link src={cv.personal.githubUrl} style={styles.contactValue}>GitHub</Link>
                   </View>
                 )}
               </View>

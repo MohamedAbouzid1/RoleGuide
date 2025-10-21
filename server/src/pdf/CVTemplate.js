@@ -54,9 +54,9 @@ const GitHubIcon = () => React.createElement(Svg, { width: "12", height: "12", v
 const styles = StyleSheet.create({
   page: {
     fontFamily: 'Roboto',
-    fontSize: 11,
-    padding: '18mm',
-    lineHeight: 1.5,
+    fontSize: 11.5,
+    padding: '16mm',
+    lineHeight: 1.4,
   },
   // Header
   header: {
@@ -75,15 +75,15 @@ const styles = StyleSheet.create({
   nameRow: {
     flexDirection: 'column',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   name: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#000000',
   },
   role: {
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: 'normal',
     color: '#666666',
     fontStyle: 'italic',
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   contactGrid: {
     flexDirection: 'row',
-    gap: 32,
+    gap: 40,
   },
   contactColumn: {
     flex: 1,
@@ -99,11 +99,11 @@ const styles = StyleSheet.create({
   },
   contactRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
     alignItems: 'center',
   },
   contactIcon: {
-    fontSize: 8,
+    fontSize: 14,
     color: '#000000',
     fontWeight: 'bold',
   },
@@ -117,27 +117,27 @@ const styles = StyleSheet.create({
     textDecoration: 'underline',
   },
   photo: {
-    width: 110,
-    height: 110,
+    width: 100,
+    height: 100,
     border: '1px solid #000000',
-    borderRadius: 55,
+    borderRadius: 50,
     objectFit: 'cover',
   },
   // Sections
   section: {
-    marginBottom: 10,
+    marginBottom: 16,
   },
   sectionHeader: {
-    marginBottom: 6,
+    marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: 'bold',
     color: '#000000',
     marginBottom: 4,
   },
   sectionLine: {
-    height: 1,
+    height: 1.5,
     backgroundColor: '#000000',
     width: '100%',
   },
@@ -145,18 +145,19 @@ const styles = StyleSheet.create({
   profileText: {
     fontSize: 12,
     color: '#000000',
-    lineHeight: 1.3,
+    lineHeight: 1.35,
+    paddingTop: 4,
   },
   // Experience & Education - 2 column grid
   entryContainer: {
-    marginBottom: 8,
+    marginBottom: 14,
   },
   entryGrid: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
   },
   entryLeft: {
-    width: 150,
+    width: 120,
     fontSize: 12,
     color: '#000000',
   },
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     color: '#000000',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   entryCompany: {
     fontSize: 12,
@@ -186,10 +187,10 @@ const styles = StyleSheet.create({
   bullet: {
     fontSize: 12,
     color: '#000000',
-    marginBottom: 2,
-    lineHeight: 1.4,
-    textIndent: -8,
-    paddingLeft: 8,
+    marginBottom: 3,
+    lineHeight: 1.35,
+    textIndent: -10,
+    paddingLeft: 10,
   },
   // Skills
   skillCategory: {
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
   },
   skillGrid: {
     flexDirection: 'row',
-    gap: 32,
+    gap: 24,
   },
   skillColumn: {
     flex: 1,
@@ -211,12 +212,12 @@ const styles = StyleSheet.create({
   skillItem: {
     fontSize: 12,
     color: '#000000',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   // Languages
   languagesGrid: {
     flexDirection: 'row',
-    gap: 32,
+    gap: 24,
   },
   languageItem: {
     flex: 1,
@@ -301,14 +302,14 @@ function CVTemplate({ cv }) {
                     [
                       [cv.personal.address?.street, cv.personal.address?.postalCode].filter(Boolean).join(', '),
                       cv.personal.address?.city
-                    ].filter(Boolean).join(', ')
+                    ].filter(Boolean).join(' ')
                   )
                 ),
                 cv.personal?.linkedinUrl && React.createElement(
                   View,
                   { style: styles.contactRow },
                   React.createElement(LinkedInIcon),
-                  React.createElement(Text, { style: [styles.contactValue, styles.linkText] }, 'LinkedIn')
+                  React.createElement(Link, { src: cv.personal.linkedinUrl, style: styles.contactValue }, 'LinkedIn')
                 )
               ),
               // Right column
@@ -331,7 +332,7 @@ function CVTemplate({ cv }) {
                   View,
                   { style: styles.contactRow },
                   React.createElement(GitHubIcon),
-                  React.createElement(Text, { style: [styles.contactValue, styles.linkText] }, 'GitHub')
+                  React.createElement(Link, { src: cv.personal.githubUrl, style: styles.contactValue }, 'GitHub')
                 )
               )
             )

@@ -6,6 +6,9 @@ interface CVStore {
   sectionVisibility: SectionVisibility;
   isDirty: boolean;
   lastSaved: Date | null;
+  completedSections: Set<string>;
+  currentSection: string;
+  openSections: string[];
   
   updateCV: (updates: Partial<CV>) => void;
   updateSection: <K extends keyof CV>(
@@ -16,6 +19,10 @@ interface CVStore {
   setDirty: (isDirty: boolean) => void;
   setLastSaved: (date: Date) => void;
   reset: () => void;
+  setCompletedSections: (sections: Set<string>) => void;
+  setCurrentSection: (section: string) => void;
+  setOpenSections: (sections: string[]) => void;
+  openNextSection: () => void;
 }
 
 const initialCV: CV = {
@@ -61,11 +68,14 @@ const initialVisibility: SectionVisibility = {
   references: false
 };
 
-export const useCVStore = create<CVStore>((set) => ({
+export const useCVStore = create<CVStore>((set, get) => ({
   cv: initialCV,
   sectionVisibility: initialVisibility,
   isDirty: false,
   lastSaved: null,
+  completedSections: new Set(),
+  currentSection: 'personal',
+  openSections: ['personal'],
   
   updateCV: (updates) => set((state) => ({
     cv: { ...state.cv, ...updates },
@@ -90,6 +100,29 @@ export const useCVStore = create<CVStore>((set) => ({
     cv: initialCV,
     sectionVisibility: initialVisibility,
     isDirty: false,
-    lastSaved: null
-  })
+    lastSaved: null,
+    completedSections: new Set(),
+    currentSection: 'personal',
+    openSections: ['personal']
+  }),
+  
+  setCompletedSections: (sections) => set({ completedSections: sections }),
+  setCurrentSection: (section) => set({ currentSection: section }),
+  setOpenSections: (sections) => set({ openSections: sections }),
+  
+  openNextSection: () => {
+    const { currentSection, openSections } = get();
+    const sectionOrder = ['personal', 'profile', 'experience', 'education', 'skills', 'languages'];
+    const currentIndex = sectionOrder.indexOf(currentSection);
+    
+    if (currentIndex < sectionOrder.length - 1) {
+      const nextSection = sectionOrder[currentIndex + 1];
+      const newOpenSections = [...openSections, nextSection];
+      
+      set({
+        currentSection: nextSection,
+        openSections: newOpenSections
+      });
+    }
+  }
 }));
