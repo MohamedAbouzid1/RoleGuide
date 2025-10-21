@@ -11,6 +11,7 @@ export type CV = {
       };
       email: string;
       phone?: string;
+      nationality?: string;
       photoUrl?: string;
       includePhoto?: boolean;
       websiteUrl?: string;

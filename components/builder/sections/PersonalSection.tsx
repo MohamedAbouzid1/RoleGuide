@@ -38,11 +38,16 @@ export function PersonalSection() {
             onChange={(e) => updateSection('personal', { ...cv.personal, email: e.target.value })} />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <div>
           <label className="block text-sm font-medium">{t('phone')}</label>
           <input className="mt-1 w-full rounded border p-2" value={cv.personal.phone ?? ''}
             onChange={(e) => updateSection('personal', { ...cv.personal, phone: e.target.value })} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">{t('nationality')} (optional)</label>
+          <input className="mt-1 w-full rounded border p-2" placeholder={cv.language === 'de' ? "z.B. Deutsch" : "e.g. German"} value={cv.personal.nationality ?? ''}
+            onChange={(e) => updateSection('personal', { ...cv.personal, nationality: e.target.value })} />
         </div>
         <div>
           <label className="block text-sm font-medium">{t('profilePicture')} (optional)</label>
