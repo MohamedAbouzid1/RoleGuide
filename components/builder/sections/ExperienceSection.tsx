@@ -32,6 +32,12 @@ export function ExperienceSection({ evaluation }: { evaluation: Evaluation | nul
     updateSection('experience', next);
   };
 
+  const removeBullet = (idx: number, bIdx: number) => {
+    const next = [...cv.experience];
+    next[idx].bullets = next[idx].bullets.filter((_, k) => k !== bIdx);
+    updateSection('experience', next);
+  };
+
   return (
     <div className="space-y-4">
       {cv.experience.map((exp, i) => (
@@ -63,7 +69,10 @@ export function ExperienceSection({ evaluation }: { evaluation: Evaluation | nul
           <div className="mt-3">
             <div className="mb-2 text-sm font-medium">Aufzählungspunkte</div>
             {exp.bullets.map((b, j) => (
-              <input key={j} className="mb-2 w-full rounded border p-2" value={b} onChange={(e) => updateBullet(i, j, e.target.value)} />
+              <div key={j} className="mb-2 grid grid-cols-[1fr_auto] items-start gap-2">
+                <input className="w-full rounded border p-2" value={b} onChange={(e) => updateBullet(i, j, e.target.value)} />
+                <button type="button" onClick={() => removeBullet(i, j)} className="rounded border px-2 py-1 text-sm">Entfernen</button>
+              </div>
             ))}
             <button type="button" onClick={() => addBullet(i)} className="rounded border px-3 py-1 text-sm">Punkt hinzufügen</button>
           </div>

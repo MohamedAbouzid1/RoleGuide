@@ -7,12 +7,12 @@ import { LanguageProvider } from '@/lib/language-context';
 const jakarta = Plus_Jakarta_Sans({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'RoleGuide - ATS-Optimized CV Builder for the German Job Market',
-  description: 'Create professional, ATS-optimized CVs tailored to German hiring standards. AI-powered CV builder that helps you get past applicant tracking systems and land more interviews.',
+  title: 'RoleGuide - Free German CV Builder for International Job Seekers',
+  description: 'Create ATS-optimized German CVs that land interviews. Built specifically for international professionals seeking jobs in Germany. 100% free forever.',
   keywords: 'CV builder, German CV, Lebenslauf, ATS optimization, German job market, resume builder, AI CV',
   openGraph: {
-    title: 'RoleGuide - ATS-Optimized CV Builder for the German Job Market',
-    description: 'Create professional, ATS-optimized CVs tailored to German hiring standards.',
+    title: 'RoleGuide - Free German CV Builder for International Job Seekers',
+    description: 'Create ATS-optimized German CVs that land interviews. Built specifically for international professionals seeking jobs in Germany. 100% free forever.',
     type: 'website',
   },
 };

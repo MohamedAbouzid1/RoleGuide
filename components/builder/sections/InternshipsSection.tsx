@@ -32,6 +32,12 @@ export function InternshipsSection({ evaluation }: { evaluation: Evaluation | nu
     updateSection('internships', next);
   };
 
+  const removeBullet = (idx: number, bIdx: number) => {
+    const next = [...cv.internships];
+    next[idx].bullets = next[idx].bullets.filter((_, k) => k !== bIdx);
+    updateSection('internships', next);
+  };
+
   return (
     <div className="space-y-4">
       {cv.internships.map((internship, i) => (
@@ -63,7 +69,10 @@ export function InternshipsSection({ evaluation }: { evaluation: Evaluation | nu
           <div className="mt-3">
             <label className="block text-sm">Aufzählungspunkte</label>
             {internship.bullets.map((bullet, j) => (
-              <input key={j} className="mb-2 w-full rounded border p-2" value={bullet} onChange={(e) => updateBullet(i, j, e.target.value)} />
+              <div key={j} className="mb-2 grid grid-cols-[1fr_auto] items-start gap-2">
+                <input className="w-full rounded border p-2" value={bullet} onChange={(e) => updateBullet(i, j, e.target.value)} />
+                <button type="button" onClick={() => removeBullet(i, j)} className="rounded border px-2 py-1 text-sm">Entfernen</button>
+              </div>
             ))}
             <button className="rounded bg-blue-500 px-3 py-1 text-white" onClick={() => addBullet(i)}>
               Punkt hinzufügen
