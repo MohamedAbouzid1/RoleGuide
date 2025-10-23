@@ -448,7 +448,8 @@ export default function HomePage() {
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <div className="mb-4 flex items-center gap-2">
-                <Sparkles className="h-6 w-6 text-emerald-400" />
+                {/* <Sparkles className="h-6 w-6 text-emerald-400" /> */}
+                <Image src="/assets/logo.png" alt="RoleGuide" width={36} height={36} className="rounded" />
                 <span className="text-xl font-semibold text-white">RoleGuide</span>
               </div>
               <p className="text-sm text-gray-400">
