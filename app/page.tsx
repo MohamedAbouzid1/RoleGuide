@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, CheckCircle2, Globe, Sparkles, MessageSquare, Brain, Shield, Zap, Clock, Star, ShieldCheck, Target, Languages, Zap as ZapIcon, Download } from "lucide-react";
+import { ArrowRight, CheckCircle2, Globe, Sparkles, Zap, Star, ShieldCheck, Target, Languages, Zap as ZapIcon, Download } from "lucide-react";
 
 export default function HomePage() {
   const [language, setLanguage] = useState<"en" | "de">("en");

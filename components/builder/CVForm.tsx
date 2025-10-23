@@ -11,12 +11,10 @@ import {
 import { PersonalSection } from './sections/PersonalSection';
 import { ProfileSection } from './sections/ProfileSection';
 import { ExperienceSection } from './sections/ExperienceSection';
-import { InternshipsSection } from './sections/InternshipsSection';
 import { EducationSection } from './sections/EducationSection';
 import { SkillsSection } from './sections/SkillsSection';
 import { LanguagesSection } from './sections/LanguagesSection';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, ChevronRight } from 'lucide-react';
@@ -158,22 +156,27 @@ export function CVForm({ evaluation }: CVFormProps) {
         <Progress value={progressPercentage} className="h-2" />
       </div>
       
-      <Accordion 
-        type="multiple" 
-        value={openSections} 
-        onValueChange={setOpenSections}
-        className="w-full"
-      >
+      <Accordion className="w-full">
         {sectionOrder.map((sectionName, index) => {
           const isCompleted = completedSections.has(sectionName);
           const isCurrent = currentSection === sectionName;
           const preview = getSectionPreview(sectionName);
           const isLastSection = index === sectionOrder.length - 1;
+          const isOpen = openSections.includes(sectionName);
 
           return (
             <AccordionItem key={sectionName} value={sectionName} data-section={sectionName}>
-              <AccordionTrigger className="hover:no-underline">
-                <div className="flex items-center justify-between w-full mr-4">
+              <AccordionTrigger>
+                <div 
+                  className="flex items-center justify-between w-full mr-4 cursor-pointer hover:no-underline"
+                  onClick={() => {
+                    if (isOpen) {
+                      setOpenSections(openSections.filter(s => s !== sectionName));
+                    } else {
+                      setOpenSections([...openSections, sectionName]);
+                    }
+                  }}
+                >
                   <div className="flex items-center gap-3">
                     {isCompleted && (
                       <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
@@ -183,7 +186,7 @@ export function CVForm({ evaluation }: CVFormProps) {
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    {!openSections.includes(sectionName) && preview && (
+                    {!isOpen && preview && (
                       <span className="text-sm text-gray-500 truncate max-w-xs">
                         {preview}
                       </span>
@@ -196,26 +199,28 @@ export function CVForm({ evaluation }: CVFormProps) {
                   </div>
                 </div>
               </AccordionTrigger>
-              <AccordionContent>
-                {sectionName === 'personal' && <PersonalSection />}
-                {sectionName === 'profile' && <ProfileSection />}
-                {sectionName === 'experience' && <ExperienceSection evaluation={evaluation} />}
-                {sectionName === 'education' && <EducationSection />}
-                {sectionName === 'skills' && <SkillsSection evaluation={evaluation} />}
-                {sectionName === 'languages' && <LanguagesSection />}
-                
-                {/* Continue Button */}
-                <div className="flex justify-end pt-4 border-t mt-4">
-                  <Button 
-                    onClick={() => handleContinueToNext(sectionName)}
-                    disabled={!isSectionComplete(sectionName)}
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    {isLastSection ? 'Fertig' : `Weiter zu ${nextSectionTitles[sectionName as keyof typeof nextSectionTitles]}`}
-                    {!isLastSection && <ChevronRight className="ml-2 h-4 w-4" />}
-                  </Button>
-                </div>
-              </AccordionContent>
+              {isOpen && (
+                <AccordionContent>
+                  {sectionName === 'personal' && <PersonalSection />}
+                  {sectionName === 'profile' && <ProfileSection />}
+                  {sectionName === 'experience' && <ExperienceSection evaluation={evaluation} />}
+                  {sectionName === 'education' && <EducationSection />}
+                  {sectionName === 'skills' && <SkillsSection evaluation={evaluation} />}
+                  {sectionName === 'languages' && <LanguagesSection />}
+                  
+                  {/* Continue Button */}
+                  <div className="flex justify-end pt-4 border-t mt-4">
+                    <Button 
+                      onClick={() => handleContinueToNext(sectionName)}
+                      disabled={!isSectionComplete(sectionName)}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isLastSection ? 'Fertig' : `Weiter zu ${nextSectionTitles[sectionName as keyof typeof nextSectionTitles]}`}
+                      {!isLastSection && <ChevronRight className="ml-2 h-4 w-4" />}
+                    </Button>
+                  </div>
+                </AccordionContent>
+              )}
             </AccordionItem>
           );
         })}

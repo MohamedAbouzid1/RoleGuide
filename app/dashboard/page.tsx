@@ -2,220 +2,220 @@
 
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/lib/language-context';
 import { draftsApi } from '@/lib/api-client';
+import Sidebar from '@/components/ui/sidebar';
+import CVCard from '@/components/ui/cv-card';
+import NewCVCard from '@/components/ui/new-cv-card';
+
+interface Draft {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  overallScore?: number;
+  atsScore?: number;
+  data?: any; // CV data for thumbnail generation
+}
 
 export default function DashboardIndex() {
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
-  const [isCreating, setIsCreating] = useState(false);
-  const { t, language, setLanguage, cvLanguage, setCvLanguage } = useLanguage();
+  const { t, cvLanguage, setCvLanguage } = useLanguage();
+  const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [draftsLoading, setDraftsLoading] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleCreateNewCV = async () => {
-    setIsCreating(true);
-    try {
-      // Create a new draft using the backend API
-      const draft = await draftsApi.create({
-        title: cvLanguage === 'de' ? 'Mein Lebenslauf' : 'My CV',
-        data: {
-          personal: {
-            firstName: '',
-            lastName: '',
-            email: '',
-            phone: '',
-            address: '',
-            dateOfBirth: '',
-            nationality: '',
-            profilePicture: ''
-          },
-          profile: {
-            summary: ''
-          },
-          experience: [],
-          education: [],
-          skills: [],
-          languages: [],
-          language: cvLanguage
-        }
-      });
-
-      router.push(`/builder/${draft.id}`);
-    } catch (error) {
-      console.error('Error creating new CV:', error);
-      alert('Failed to create CV. Please try again.');
-    } finally {
-      setIsCreating(false);
+  useEffect(() => {
+    if (user) {
+      fetchDrafts();
     }
+  }, [user]);
+
+  const fetchDrafts = async () => {
+    try {
+      setDraftsLoading(true);
+      setError(null);
+      const data = await draftsApi.getAll();
+      setDrafts(data);
+    } catch (err: any) {
+      console.error('Error fetching drafts:', err);
+      setError(err.message || 'Failed to load drafts');
+    } finally {
+      setDraftsLoading(false);
+    }
+  };
+
+  const handleDeleteDraft = (id: string) => {
+    setDrafts(drafts.filter(d => d.id !== id));
+  };
+
+  const handleCreateNewCV = (id: string) => {
+    // Refresh drafts list to include the new CV
+    fetchDrafts();
+  };
+
+  const handleDuplicateCV = (id: string) => {
+    // Refresh drafts list to include the duplicated CV
+    fetchDrafts();
   };
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-4xl p-8">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-lg">{t('loading')}</div>
-        </div>
-      </main>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-lg text-gray-600">{t('loading')}</div>
+      </div>
     );
   }
 
   if (!user) {
     return (
-      <main className="mx-auto max-w-4xl p-8">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">{t('loginRequired')}</h1>
           <p className="text-gray-700 mb-4">{t('mustSignIn')}</p>
-          <Link href="/auth/login" className="bg-black text-white px-4 py-2 rounded">
+          <Link href="/auth/login" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
             {t('signIn')}
           </Link>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="mx-auto max-w-6xl p-8">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('dashboard')}</h1>
-          <p className="text-gray-600 mt-1">{t('welcomeBack')}, {user?.name || user?.email}</p>
-        </div>
-        <div className="flex items-center gap-4">
-          {/* Language Selector */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600">{t('selectLanguage')}:</label>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as 'en' | 'de')}
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-            >
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
-            </select>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <div className="hidden lg:block flex-shrink-0">
+        <Sidebar 
+          isCollapsed={sidebarCollapsed} 
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+        />
+      </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarCollapsed && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setSidebarCollapsed(false)} />
+          <div className="relative z-10">
+            <Sidebar isCollapsed={false} onToggle={() => setSidebarCollapsed(false)} />
           </div>
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
           <button
-            onClick={() => {
-              logout();
-              router.push('/');
-            }}
-            className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+            onClick={() => setSidebarCollapsed(true)}
+            className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
           >
-            {t('logout')}
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
+          <h1 className="text-lg font-semibold text-gray-900">{t('myResumes')}</h1>
+          <div className="w-10" /> {/* Spacer */}
         </div>
-      </div>
 
-      {/* CV Language Selection */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
-        <h2 className="text-lg font-semibold mb-4">{t('cvLanguage')}</h2>
-        <div className="flex items-center gap-4">
-          <label className="text-sm text-gray-600">{t('cvLanguage')}:</label>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCvLanguage('de')}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
-                cvLanguage === 'de'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Deutsch (German CV)
-            </button>
-            <button
-              onClick={() => setCvLanguage('en')}
-              className={`px-4 py-2 rounded-md text-sm font-medium ${
-                cvLanguage === 'en'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              English (English CV)
-            </button>
-          </div>
-        </div>
-        <p className="text-sm text-gray-500 mt-2">
-          {cvLanguage === 'de' 
-            ? 'Ihr Lebenslauf wird auf Deutsch erstellt (für deutsche Stellenausschreibungen)'
-            : 'Your CV will be created in English (for English job applications)'
-          }
-        </p>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {/* Create New CV */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center mb-4">
-            <div className="bg-blue-100 p-3 rounded-lg">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
+        {/* CV Language Selection */}
+        <div className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-medium text-gray-900">{t('cvLanguage')}</h2>
+              <p className="text-xs text-gray-500 mt-1">
+                {cvLanguage === 'de' 
+                  ? 'Ihr Lebenslauf wird auf Deutsch erstellt'
+                  : 'Your CV will be created in English'
+                }
+              </p>
             </div>
-            <h3 className="text-lg font-semibold ml-3">{t('createNewCV')}</h3>
-          </div>
-          <p className="text-gray-600 mb-4">{t('createNewCVDescription')}</p>
-          <button
-            onClick={handleCreateNewCV}
-            disabled={isCreating}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isCreating ? t('saving') : t('createNewCV')}
-          </button>
-        </div>
-
-        {/* View Saved Drafts */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center mb-4">
-            <div className="bg-green-100 p-3 rounded-lg">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCvLanguage('de')}
+                className={`px-3 py-1 rounded-md text-sm font-medium ${
+                  cvLanguage === 'de'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                DE
+              </button>
+              <button
+                onClick={() => setCvLanguage('en')}
+                className={`px-3 py-1 rounded-md text-sm font-medium ${
+                  cvLanguage === 'en'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                EN
+              </button>
             </div>
-            <h3 className="text-lg font-semibold ml-3">{t('savedDrafts')}</h3>
           </div>
-          <p className="text-gray-600 mb-4">{t('savedDraftsDescription')}</p>
-          <Link
-            href="/dashboard/dashboard"
-            className="block w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 text-center"
-          >
-            {t('savedDrafts')}
-          </Link>
         </div>
 
-        {/* CV Evaluation */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center mb-4">
-            <div className="bg-purple-100 p-3 rounded-lg">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+        {/* Main Content Area */}
+        <main className="flex-1 p-6">
+          {/* Header */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">{t('myResumes')}</h1>
+            <p className="text-gray-600 mt-1">{t('welcomeBack')}, {user?.name || user?.email}</p>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-800">{error}</p>
+              <button
+                onClick={fetchDrafts}
+                className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+              >
+                {t('tryAgain')}
+              </button>
             </div>
-            <h3 className="text-lg font-semibold ml-3">{t('cvEvaluation')}</h3>
-          </div>
-          <p className="text-gray-600 mb-4">{t('cvEvaluationDescription')}</p>
-          <button
-            disabled
-            className="w-full bg-gray-400 text-white py-2 px-4 rounded-md cursor-not-allowed"
-          >
-            {t('comingSoon')}
-          </button>
-        </div>
-      </div>
+          )}
 
-      {/* Recent Activity */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">{t('recentActivity')}</h2>
-        <div className="text-center py-8 text-gray-500">
-          <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <p>{t('noActivityYet')}</p>
-          <p className="text-sm">{t('createFirstCV')}</p>
-        </div>
+          {/* CVs Grid */}
+          {draftsLoading ? (
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="text-lg text-gray-600">{t('loading')}</div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 md:gap-6 items-stretch">
+              {/* New CV Card */}
+              <NewCVCard onCreate={handleCreateNewCV} />
+              
+              {/* Existing CV Cards */}
+              {drafts.map((draft) => (
+                <CVCard
+                  key={draft.id}
+                  draft={draft}
+                  onDelete={handleDeleteDraft}
+                  onDuplicate={handleDuplicateCV}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!draftsLoading && drafts.length === 0 && !error && (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('noCVsYet')}</h3>
+              <p className="text-gray-600 mb-6">{t('createFirstCV')}</p>
+            </div>
+          )}
+        </main>
       </div>
-    </main>
+    </div>
   );
 }
 

@@ -21,8 +21,6 @@ export interface Translations {
   welcomeBack: string;
   createNewCV: string;
   createNewCVDescription: string;
-  savedDrafts: string;
-  savedDraftsDescription: string;
   cvEvaluation: string;
   cvEvaluationDescription: string;
   comingSoon: string;
@@ -128,6 +126,32 @@ export interface Translations {
   // Additional keys
   overallScore: string;
   noEvaluation: string;
+  
+  // New dashboard keys
+  resume: string;
+  coverLetter: string;
+  settings: string;
+  myAccount: string;
+  plansPricing: string;
+  myResumes: string;
+  newResume: string;
+  creating: string;
+  pleaseWait: string;
+  untitledCV: string;
+  editedYesterday: string;
+  editedDaysAgo: string;
+  overall: string;
+  download: string;
+  duplicate: string;
+  deleting: string;
+  confirmDeleteCV: string;
+  deleteError: string;
+  duplicateError: string;
+  downloadFeatureComingSoon: string;
+  downloadError: string;
+  createCVError: string;
+  tryAgain: string;
+  noCVsYet: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -152,8 +176,6 @@ export const translations: Record<Language, Translations> = {
     welcomeBack: 'Welcome back',
     createNewCV: 'Create New CV',
     createNewCVDescription: 'Create a new CV from scratch.',
-    savedDrafts: 'Saved Drafts',
-    savedDraftsDescription: 'View your saved CV drafts.',
     cvEvaluation: 'CV Evaluation',
     cvEvaluationDescription: 'Let our AI evaluate your CV.',
     comingSoon: 'Coming Soon',
@@ -259,6 +281,32 @@ export const translations: Record<Language, Translations> = {
     // Additional keys
     overallScore: 'Overall Score',
     noEvaluation: 'No evaluation yet',
+    
+    // New dashboard keys
+    resume: 'Resume',
+    coverLetter: 'Cover Letter',
+    settings: 'Settings',
+    myAccount: 'My Account',
+    plansPricing: 'Plans & Pricing',
+    myResumes: 'My Resumes',
+    newResume: 'New Resume',
+    creating: 'Creating...',
+    pleaseWait: 'Please wait...',
+    untitledCV: 'Untitled CV',
+    editedYesterday: 'Edited yesterday',
+    editedDaysAgo: 'Edited {days} days ago',
+    overall: 'Overall',
+    download: 'Download',
+    duplicate: 'Duplicate',
+    deleting: 'Deleting...',
+    confirmDeleteCV: 'Are you sure you want to delete this CV?',
+    deleteError: 'Failed to delete CV',
+    duplicateError: 'Failed to duplicate CV',
+    downloadFeatureComingSoon: 'Download feature coming soon',
+    downloadError: 'Failed to download CV',
+    createCVError: 'Failed to create CV',
+    tryAgain: 'Try again',
+    noCVsYet: 'No CVs yet',
   },
   
   de: {
@@ -282,8 +330,6 @@ export const translations: Record<Language, Translations> = {
     welcomeBack: 'Willkommen zurück',
     createNewCV: 'Neuen Lebenslauf erstellen',
     createNewCVDescription: 'Erstellen Sie einen neuen Lebenslauf von Grund auf.',
-    savedDrafts: 'Gespeicherte Entwürfe',
-    savedDraftsDescription: 'Zeigen Sie Ihre gespeicherten Lebenslauf-Entwürfe an.',
     cvEvaluation: 'Lebenslauf bewerten',
     cvEvaluationDescription: 'Lassen Sie Ihren Lebenslauf von unserer KI bewerten.',
     comingSoon: 'Bald verfügbar',
@@ -389,6 +435,32 @@ export const translations: Record<Language, Translations> = {
     // Additional keys
     overallScore: 'Gesamtbewertung',
     noEvaluation: 'Noch keine Bewertung',
+    
+    // New dashboard keys
+    resume: 'Lebenslauf',
+    coverLetter: 'Anschreiben',
+    settings: 'Einstellungen',
+    myAccount: 'Mein Konto',
+    plansPricing: 'Pläne & Preise',
+    myResumes: 'Meine Lebensläufe',
+    newResume: 'Neuer Lebenslauf',
+    creating: 'Erstellen...',
+    pleaseWait: 'Bitte warten...',
+    untitledCV: 'Unbenannter Lebenslauf',
+    editedYesterday: 'Gestern bearbeitet',
+    editedDaysAgo: 'Vor {days} Tagen bearbeitet',
+    overall: 'Gesamt',
+    download: 'Herunterladen',
+    duplicate: 'Duplizieren',
+    deleting: 'Löschen...',
+    confirmDeleteCV: 'Sind Sie sicher, dass Sie diesen Lebenslauf löschen möchten?',
+    deleteError: 'Lebenslauf konnte nicht gelöscht werden',
+    duplicateError: 'Lebenslauf konnte nicht dupliziert werden',
+    downloadFeatureComingSoon: 'Download-Funktion kommt bald',
+    downloadError: 'Lebenslauf konnte nicht heruntergeladen werden',
+    createCVError: 'Lebenslauf konnte nicht erstellt werden',
+    tryAgain: 'Erneut versuchen',
+    noCVsYet: 'Noch keine Lebensläufe',
   },
 };
 

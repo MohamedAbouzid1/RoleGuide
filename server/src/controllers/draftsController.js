@@ -16,6 +16,7 @@ const getDrafts = async (req, res) => {
         updatedAt: true,
         overallScore: true,
         atsScore: true,
+        data: true, // Include data for thumbnail generation
       },
     });
 

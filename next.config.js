@@ -5,6 +5,9 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '2mb'
     }
+  },
+  images: {
+    domains: ['via.placeholder.com', 'localhost']
   }
 };
 
