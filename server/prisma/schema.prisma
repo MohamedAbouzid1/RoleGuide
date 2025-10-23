@@ -3,37 +3,48 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
+  id            String        @id @default(cuid())
+  email         String        @unique
   password      String?
   name          String?
   image         String?
+  deletedAt     DateTime?     @map("deleted_at")
+  deletedBy     String?       @map("deleted_by")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
   accounts      Account[]
   sessions      Session[]
   drafts        Draft[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  refreshTokens RefreshToken[]
+
+  @@index([deletedAt])
+  @@map("users")
 }
 
 model Draft {
-  id            String   @id @default(cuid())
-  userId        String
-  title         String   @default("Mein Lebenslauf")
-  data          Json
+  id             String     @id @default(cuid())
+  userId         String
+  title          String     @default("Mein Lebenslauf")
+  data           Json
   lastEvaluation Json?
-  overallScore  Int?
-  atsScore      Int?
-  snapshots     Snapshot[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  User          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  overallScore   Int?
+  atsScore       Int?
+  deletedAt      DateTime?  @map("deleted_at")
+  deletedBy      String?    @map("deleted_by")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+  snapshots      Snapshot[]
+  User           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
+  @@index([deletedAt])
+  @@map("drafts")
 }
 
 model Snapshot {
@@ -42,7 +53,7 @@ model Snapshot {
   data      Json
   createdAt DateTime @default(now())
   Draft     Draft    @relation(fields: [draftId], references: [id], onDelete: Cascade)
-  
+
   @@index([draftId])
 }
 
@@ -72,7 +83,7 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
 }
 
@@ -82,4 +93,17 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revoked   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
 }
