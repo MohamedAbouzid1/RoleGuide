@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { draftsApi } from '@/lib/api-client';
 import { useLanguage } from '@/lib/language-context';
-import { generateCVThumbnail } from '@/lib/thumbnail-generator';
+import { generateCVThumbnail, clearThumbnailCache } from '@/lib/thumbnail-generator';
 
 interface Draft {
   id: string;
@@ -15,6 +15,8 @@ interface Draft {
   updatedAt: string;
   overallScore?: number;
   atsScore?: number;
+  thumbnailUrl?: string;
+  thumbnailHash?: string;
   data?: any; // CV data for thumbnail generation
 }
 
@@ -37,6 +39,17 @@ export default function CVCard({ draft, onDelete, onDuplicate }: CVCardProps) {
     const loadThumbnail = async () => {
       try {
         setIsLoadingThumbnail(true);
+
+        // Check if draft has an existing thumbnail URL from the database
+        if (draft.thumbnailUrl) {
+          // Use the existing thumbnail URL from the server
+          const fullUrl = `http://localhost:4000${draft.thumbnailUrl}`;
+          setThumbnailUrl(fullUrl);
+          setIsLoadingThumbnail(false);
+          return;
+        }
+
+        // No existing thumbnail, generate a new one
         const url = await generateCVThumbnail(draft);
         setThumbnailUrl(url);
       } catch (error) {
@@ -77,6 +90,10 @@ export default function CVCard({ draft, onDelete, onDuplicate }: CVCardProps) {
     try {
       setIsDeleting(true);
       await draftsApi.delete(draft.id);
+
+      // Clear thumbnail cache for this draft
+      clearThumbnailCache(draft.id);
+
       onDelete(draft.id);
     } catch (error) {
       console.error('Error deleting draft:', error);
@@ -122,7 +139,7 @@ export default function CVCard({ draft, onDelete, onDuplicate }: CVCardProps) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 group transform hover:-translate-y-1 h-full flex flex-col">
       {/* CV Preview Thumbnail */}
-      <div className="aspect-[4/3] bg-gray-50 rounded-t-lg overflow-hidden relative flex-shrink-0">
+      <div className="aspect-[400/565] bg-gray-50 rounded-t-lg overflow-hidden relative flex-shrink-0">
         {/* CV Screenshot Preview */}
         <div className="w-full h-full relative">
           <Image

@@ -1,4 +1,5 @@
 const { doubleCsrf } = require('csrf-csrf');
+const logger = require('../config/logger');
 
 // CSRF protection configuration
 const csrfProtection = doubleCsrf({
@@ -33,7 +34,7 @@ const generateCsrfToken = (req, res, next) => {
       const token = generateToken(res, req);
       res.locals.csrfToken = token;
     } catch (error) {
-      console.error('CSRF token generation error:', error);
+      logger.error('CSRF token generation error', { error: error.message });
       // Continue without token for GET requests
     }
   }
@@ -64,7 +65,7 @@ const getCsrfToken = (req, res) => {
   try {
     return generateToken(res, req);
   } catch (error) {
-    console.error('CSRF token generation error:', error);
+    logger.error('CSRF token generation error', { error: error.message });
     return null;
   }
 };

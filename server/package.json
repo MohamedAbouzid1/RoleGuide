@@ -18,7 +18,9 @@
     "db:cleanup": "node scripts/cleanup-soft-deleted.js",
     "db:monitor": "node scripts/monitor-database.js",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev"
+    "db:migrate": "prisma migrate dev",
+    "thumbnails:cleanup": "node src/utils/cleanupThumbnails.js",
+    "thumbnails:generate": "node src/utils/generateMissingThumbnails.js"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +28,8 @@
   "dependencies": {
     "@prisma/client": "^5.11.0",
     "@react-pdf/renderer": "^3.4.4",
+    "@sentry/node": "^10.22.0",
+    "@sentry/profiling-node": "^10.22.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -39,6 +43,8 @@
     "puppeteer": "^24.26.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "winston": "^3.18.3",
+    "winston-daily-rotate-file": "^5.0.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

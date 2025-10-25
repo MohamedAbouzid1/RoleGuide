@@ -32,6 +32,8 @@ model Draft {
   userId         String
   title          String     @default("Mein Lebenslauf")
   data           Json
+  thumbnailUrl   String?    @map("thumbnail_url")
+  thumbnailHash  String?    @map("thumbnail_hash")
   lastEvaluation Json?
   overallScore   Int?
   atsScore       Int?

@@ -1,5 +1,6 @@
 const { body, param, query, validationResult } = require('express-validator');
 const { z } = require('zod');
+const logger = require('../config/logger');
 
 // Enhanced validation schemas using Zod
 const authSchemas = {
@@ -68,7 +69,12 @@ const authValidationChains = {
 const validateRequest = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log('Validation errors:', errors.array());
+    logger.warn('Validation failed', {
+      errors: errors.array(),
+      url: req.originalUrl,
+      method: req.method,
+      userId: req.user?.id
+    });
     return res.status(400).json({
       error: 'Validation failed',
       message: 'Please check your input and try again',
@@ -90,7 +96,12 @@ const validateWithZod = (schema) => {
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.log('Zod validation errors:', error.errors);
+        logger.warn('Zod validation failed', {
+          errors: error.errors,
+          url: req.originalUrl,
+          method: req.method,
+          userId: req.user?.id
+        });
         return res.status(400).json({
           error: 'Validation failed',
           message: 'Please check your input and try again',
@@ -101,7 +112,11 @@ const validateWithZod = (schema) => {
           }))
         });
       }
-      console.log('Validation error:', error);
+      logger.error('Validation error', {
+        error: error.message,
+        url: req.originalUrl,
+        method: req.method
+      });
       return res.status(500).json({ error: 'Validation error' });
     }
   };

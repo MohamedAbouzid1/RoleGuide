@@ -1,29 +1,65 @@
 const jwt = require('jsonwebtoken');
+const logger = require('../config/logger');
+const { AuthenticationError } = require('../utils/errors');
 
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  console.log('Auth middleware - Authorization header:', authHeader);
-  console.log('Auth middleware - Extracted token:', token ? `${token.substring(0, 20)}...` : 'none');
-
-  if (!token) {
-    console.log('Auth middleware - No token provided');
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
   try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    logger.debug('Authentication attempt', {
+      hasAuthHeader: !!authHeader,
+      hasToken: !!token,
+      correlationId: req.correlationId,
+    });
+
+    if (!token) {
+      logger.warn('Authentication failed - no token provided', {
+        correlationId: req.correlationId,
+        ip: req.ip,
+      });
+      throw new AuthenticationError('No authentication token provided');
+    }
+
+    // Verify JWT token
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || process.env.JWT_SECRET);
-    console.log('Auth middleware - Token decoded successfully for user:', decoded.email);
+
+    logger.debug('Token verified successfully', {
+      userId: decoded.id,
+      email: decoded.email,
+      correlationId: req.correlationId,
+    });
+
+    // Attach user to request
     req.user = {
       id: decoded.id,
       email: decoded.email,
       name: decoded.name,
     };
+
     next();
   } catch (error) {
-    console.log('Auth middleware - Token verification failed:', error.message);
-    return res.status(403).json({ error: 'Invalid or expired token' });
+    // Handle JWT specific errors
+    if (error.name === 'JsonWebTokenError') {
+      logger.warn('Authentication failed - invalid token', {
+        error: error.message,
+        correlationId: req.correlationId,
+        ip: req.ip,
+      });
+      return next(new AuthenticationError('Invalid authentication token'));
+    }
+
+    if (error.name === 'TokenExpiredError') {
+      logger.warn('Authentication failed - expired token', {
+        expiredAt: error.expiredAt,
+        correlationId: req.correlationId,
+        ip: req.ip,
+      });
+      return next(new AuthenticationError('Your session has expired. Please login again'));
+    }
+
+    // Pass error to error handler
+    next(error);
   }
 };
 

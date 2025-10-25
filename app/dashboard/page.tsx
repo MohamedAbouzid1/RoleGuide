@@ -17,6 +17,8 @@ interface Draft {
   updatedAt: string;
   overallScore?: number;
   atsScore?: number;
+  thumbnailUrl?: string;
+  thumbnailHash?: string;
   data?: any; // CV data for thumbnail generation
 }
 

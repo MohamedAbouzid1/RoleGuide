@@ -1,172 +1,251 @@
 const { prisma } = require('../config/database');
+const logger = require('../config/logger');
+const { ValidationError, NotFoundError, AuthorizationError } = require('../utils/errors');
+const { asyncHandler } = require('../middleware/errorHandler');
+const fs = require('fs');
+const path = require('path');
 
-const getDrafts = async (req, res) => {
-  try {
-    const drafts = await prisma.draft.findMany({
-      where: {
-        userId: req.user.id,
-      },
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      select: {
-        id: true,
-        title: true,
-        createdAt: true,
-        updatedAt: true,
-        overallScore: true,
-        atsScore: true,
-        data: true, // Include data for thumbnail generation
-      },
-    });
+const getDrafts = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
-    return res.json(drafts);
-  } catch (error) {
-    console.error('Error fetching drafts:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+  logger.info('Fetching drafts', { userId });
+
+  const drafts = await prisma.draft.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      updatedAt: 'desc',
+    },
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      updatedAt: true,
+      overallScore: true,
+      atsScore: true,
+      thumbnailUrl: true,
+      thumbnailHash: true,
+      data: true, // Include data for thumbnail generation
+    },
+  });
+
+  logger.debug('Drafts fetched successfully', { userId, count: drafts.length });
+
+  return res.json(drafts);
+});
+
+const createDraft = asyncHandler(async (req, res) => {
+  const { title, data } = req.body;
+  const userId = req.user.id;
+
+  logger.info('Creating draft', { userId, hasData: !!data });
+
+  const draft = await prisma.draft.create({
+    data: {
+      title: title || 'Mein Lebenslauf',
+      data: data || {},
+      userId,
+    },
+  });
+
+  logger.info('Draft created successfully', { userId, draftId: draft.id, title: draft.title });
+
+  return res.status(201).json(draft);
+});
+
+const getDraft = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  logger.debug('Fetching draft', { userId, draftId: id });
+
+  const draft = await prisma.draft.findFirst({
+    where: {
+      id,
+      userId,
+    },
+  });
+
+  if (!draft) {
+    logger.warn('Draft not found', { userId, draftId: id });
+    throw new NotFoundError('Draft not found');
   }
-};
 
-const createDraft = async (req, res) => {
-  try {
-    const { title, data } = req.body;
+  logger.debug('Draft fetched successfully', { userId, draftId: id });
 
-    const draft = await prisma.draft.create({
-      data: {
-        title: title || 'Mein Lebenslauf',
-        data: data || {},
-        userId: req.user.id,
-      },
-    });
+  return res.json(draft);
+});
 
-    return res.status(201).json(draft);
-  } catch (error) {
-    console.error('Error creating draft:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+const updateDraft = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { title, data } = req.body;
+  const userId = req.user.id;
+
+  logger.info('Updating draft', { userId, draftId: id, hasTitle: !!title, hasData: !!data });
+
+  // First verify ownership
+  const existingDraft = await prisma.draft.findFirst({
+    where: { id, userId },
+  });
+
+  if (!existingDraft) {
+    logger.warn('Draft not found or unauthorized', { userId, draftId: id });
+    throw new NotFoundError('Draft not found');
   }
-};
 
-const getDraft = async (req, res) => {
-  try {
-    const { id } = req.params;
+  const draft = await prisma.draft.update({
+    where: { id },
+    data: {
+      ...(title !== undefined && { title }),
+      ...(data !== undefined && { data }),
+    },
+  });
 
-    const draft = await prisma.draft.findFirst({
-      where: {
-        id,
-        userId: req.user.id,
-      },
-    });
+  logger.info('Draft updated successfully', { userId, draftId: id });
 
-    if (!draft) {
-      return res.status(404).json({ error: 'Draft not found' });
-    }
+  return res.json(draft);
+});
 
-    return res.json(draft);
-  } catch (error) {
-    console.error('Error fetching draft:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+const patchDraft = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { overallScore, atsScore, lastEvaluation } = req.body;
+  const userId = req.user.id;
+
+  logger.info('Patching draft evaluation', {
+    userId,
+    draftId: id,
+    hasOverallScore: overallScore !== undefined,
+    hasAtsScore: atsScore !== undefined
+  });
+
+  // First verify ownership
+  const existingDraft = await prisma.draft.findFirst({
+    where: { id, userId },
+  });
+
+  if (!existingDraft) {
+    logger.warn('Draft not found or unauthorized', { userId, draftId: id });
+    throw new NotFoundError('Draft not found');
   }
-};
 
-const updateDraft = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, data } = req.body;
+  const draft = await prisma.draft.update({
+    where: { id },
+    data: {
+      ...(overallScore !== undefined && { overallScore }),
+      ...(atsScore !== undefined && { atsScore }),
+      ...(lastEvaluation !== undefined && { lastEvaluation }),
+    },
+  });
 
-    const draft = await prisma.draft.update({
-      where: {
-        id,
-        userId: req.user.id,
-      },
-      data: {
-        ...(title !== undefined && { title }),
-        ...(data !== undefined && { data }),
-      },
-    });
+  logger.info('Draft evaluation updated successfully', {
+    userId,
+    draftId: id,
+    overallScore: draft.overallScore,
+    atsScore: draft.atsScore
+  });
 
-    return res.json(draft);
-  } catch (error) {
-    console.error('Error updating draft:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+  return res.json(draft);
+});
+
+const deleteDraft = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  logger.info('Deleting draft', { userId, draftId: id });
+
+  // Get draft to find thumbnail before deletion
+  const draft = await prisma.draft.findFirst({
+    where: {
+      id,
+      userId,
+    },
+    select: {
+      id: true,
+      thumbnailUrl: true,
+    },
+  });
+
+  if (!draft) {
+    logger.warn('Draft not found or unauthorized for deletion', { userId, draftId: id });
+    throw new NotFoundError('Draft not found');
   }
-};
 
-const patchDraft = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { overallScore, atsScore, lastEvaluation } = req.body;
+  // Delete thumbnail file if exists
+  if (draft.thumbnailUrl) {
+    const thumbnailPath = path.join(__dirname, '../../public', draft.thumbnailUrl);
 
-    const draft = await prisma.draft.update({
-      where: {
-        id,
-        userId: req.user.id,
-      },
-      data: {
-        ...(overallScore !== undefined && { overallScore }),
-        ...(atsScore !== undefined && { atsScore }),
-        ...(lastEvaluation !== undefined && { lastEvaluation }),
-      },
-    });
-
-    return res.json(draft);
-  } catch (error) {
-    console.error('Error patching draft:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-const deleteDraft = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    await prisma.draft.delete({
-      where: {
-        id,
-        userId: req.user.id,
-      },
-    });
-
-    return res.status(204).send();
-  } catch (error) {
-    console.error('Error deleting draft:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-const createSnapshot = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { data } = req.body;
-
-    // Verify the draft belongs to the user
-    const draft = await prisma.draft.findFirst({
-      where: {
-        id,
-        userId: req.user.id,
-      },
-    });
-
-    if (!draft) {
-      return res.status(404).json({ error: 'Draft not found' });
-    }
-
-    const snapshot = await prisma.snapshot.create({
-      data: {
+    if (fs.existsSync(thumbnailPath)) {
+      try {
+        fs.unlinkSync(thumbnailPath);
+        logger.info('Deleted thumbnail file', { userId, draftId: id, path: thumbnailPath });
+      } catch (err) {
+        logger.error('Error deleting thumbnail file', {
+          userId,
+          draftId: id,
+          error: err.message,
+          path: thumbnailPath
+        });
+        // Continue with draft deletion even if thumbnail deletion fails
+      }
+    } else {
+      logger.debug('Thumbnail file not found, skipping deletion', {
+        userId,
         draftId: id,
-        data: data || {},
-      },
-      select: {
-        id: true,
-        createdAt: true,
-      },
-    });
-
-    return res.status(201).json(snapshot);
-  } catch (error) {
-    console.error('Error creating snapshot:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+        path: thumbnailPath
+      });
+    }
   }
-};
+
+  // Delete draft from database
+  await prisma.draft.delete({
+    where: { id },
+  });
+
+  logger.info('Draft deleted successfully', { userId, draftId: id });
+
+  return res.status(204).send();
+});
+
+const createSnapshot = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { data } = req.body;
+  const userId = req.user.id;
+
+  logger.info('Creating snapshot', { userId, draftId: id });
+
+  // Verify the draft belongs to the user
+  const draft = await prisma.draft.findFirst({
+    where: {
+      id,
+      userId,
+    },
+  });
+
+  if (!draft) {
+    logger.warn('Draft not found for snapshot creation', { userId, draftId: id });
+    throw new NotFoundError('Draft not found');
+  }
+
+  const snapshot = await prisma.snapshot.create({
+    data: {
+      draftId: id,
+      data: data || {},
+    },
+    select: {
+      id: true,
+      createdAt: true,
+    },
+  });
+
+  logger.info('Snapshot created successfully', {
+    userId,
+    draftId: id,
+    snapshotId: snapshot.id
+  });
+
+  return res.status(201).json(snapshot);
+});
 
 module.exports = {
   getDrafts,

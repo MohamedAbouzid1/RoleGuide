@@ -4,16 +4,28 @@ const { CVTemplate } = require('../pdf/CVTemplate');
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
+const logger = require('../config/logger');
+const { ValidationError, ExternalServiceError } = require('../utils/errors');
+const { asyncHandler } = require('../middleware/errorHandler');
+const { generateContentHash, sanitizeFilename } = require('../utils/hash');
+const { prisma } = require('../config/database');
+const { generateCVThumbnailHTML } = require('../utils/generateCVThumbnailHTML');
 
-const exportPDF = async (req, res) => {
+const exportPDF = asyncHandler(async (req, res) => {
+  const cvData = req.body;
+  const userId = req.user?.id;
+
+  logger.info('PDF export request', { userId, hasPersonal: !!cvData?.personal });
+
+  // Validate that cvData has required structure
+  if (!cvData || !cvData.personal) {
+    logger.warn('Invalid CV data for PDF export', { userId, hasData: !!cvData });
+    throw new ValidationError('Invalid CV data - personal information is required');
+  }
+
+  logger.debug('Generating PDF', { userId, fullName: cvData.personal.fullName });
+
   try {
-    const cvData = req.body;
-
-    // Validate that cvData has required structure
-    if (!cvData || !cvData.personal) {
-      return res.status(400).json({ error: 'Invalid CV data' });
-    }
-
     // Create PDF buffer
     const pdfBuffer = await renderToBuffer(React.createElement(CVTemplate, { cv: cvData }));
 
@@ -21,213 +33,160 @@ const exportPDF = async (req, res) => {
     const filename = `${cvData.personal?.fullName || 'Lebenslauf'}.pdf`;
     const sanitizedFilename = filename.replace(/[^a-z0-9äöüß_\-\.]/gi, '_');
 
+    logger.info('PDF generated successfully', {
+      userId,
+      filename: sanitizedFilename,
+      bufferSize: pdfBuffer.length
+    });
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${sanitizedFilename}"`);
 
     return res.send(Buffer.from(pdfBuffer));
   } catch (error) {
-    console.error('Error generating PDF:', error);
-    return res.status(500).json({
-      error: 'Failed to generate PDF',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    logger.error('PDF generation failed', {
+      userId,
+      error: error.message,
+      stack: error.stack
     });
+    throw new ExternalServiceError('Failed to generate PDF', '@react-pdf/renderer');
   }
-};
+});
 
-const generateThumbnail = async (req, res) => {
+const generateThumbnail = asyncHandler(async (req, res) => {
+  const { draftId, cvData } = req.body;
+  const userId = req.user?.id;
+
+  logger.info('Thumbnail generation request', { userId, draftId, hasPersonal: !!cvData?.personal });
+
+  // Validate input
+  if (!draftId) {
+    logger.warn('Missing draftId', { userId });
+    throw new ValidationError('draftId is required');
+  }
+
+  if (!cvData || !cvData.personal) {
+    logger.warn('Invalid CV data for thumbnail generation', { userId, draftId, hasData: !!cvData });
+    throw new ValidationError('Invalid CV data - personal information is required');
+  }
+
+  // Verify draft ownership
+  const draft = await prisma.draft.findFirst({
+    where: {
+      id: draftId,
+      userId: userId,
+    },
+    select: {
+      id: true,
+      thumbnailUrl: true,
+      thumbnailHash: true,
+    },
+  });
+
+  if (!draft) {
+    logger.warn('Draft not found or access denied', { userId, draftId });
+    throw new ValidationError('Draft not found');
+  }
+
+  // Generate content hash
+  const contentHash = generateContentHash(cvData);
+  logger.debug('Generated content hash', { userId, draftId, hash: contentHash });
+
+  // Check if existing thumbnail is still valid
+  if (draft.thumbnailUrl && draft.thumbnailHash === contentHash) {
+    // Check if file still exists
+    const thumbnailPath = path.join(__dirname, '../../public', draft.thumbnailUrl);
+
+    if (fs.existsSync(thumbnailPath)) {
+      logger.info('Using cached thumbnail', { userId, draftId, url: draft.thumbnailUrl });
+      return res.json({
+        thumbnail: draft.thumbnailUrl,
+        cached: true,
+        message: 'Using existing thumbnail',
+      });
+    } else {
+      logger.warn('Thumbnail file missing, regenerating', { userId, draftId, path: thumbnailPath });
+    }
+  }
+
+  // Create thumbnails directory if it doesn't exist
+  const thumbnailsDir = path.join(__dirname, '../../public/thumbnails');
+  if (!fs.existsSync(thumbnailsDir)) {
+    logger.debug('Creating thumbnails directory', { path: thumbnailsDir });
+    fs.mkdirSync(thumbnailsDir, { recursive: true });
+  }
+
+  // Use draft ID as filename (consistent, no collisions)
+  const filename = `${draftId}.png`;
+  const thumbnailPath = path.join(thumbnailsDir, filename);
+
+  // Delete old thumbnail if it exists (before generating new one)
+  if (fs.existsSync(thumbnailPath)) {
+    logger.debug('Deleting old thumbnail', { userId, draftId, path: thumbnailPath });
+    fs.unlinkSync(thumbnailPath);
+  }
+
+  logger.debug('Generating new thumbnail', { userId, draftId, filename });
+
+  // Generate HTML template matching the actual CV layout
+  const htmlTemplate = generateCVThumbnailHTML(cvData);
+
   try {
-    const cvData = req.body;
-
-    // Validate that cvData has required structure
-    if (!cvData || !cvData.personal) {
-      return res.status(400).json({ error: 'Invalid CV data' });
-    }
-
-    // Create thumbnails directory if it doesn't exist
-    const thumbnailsDir = path.join(__dirname, '../../public/thumbnails');
-    if (!fs.existsSync(thumbnailsDir)) {
-      fs.mkdirSync(thumbnailsDir, { recursive: true });
-    }
-
-    // Generate unique filename
-    const filename = `${cvData.personal?.fullName || 'cv'}_${Date.now()}`;
-    const sanitizedFilename = filename.replace(/[^a-z0-9äöüß_\-\.]/gi, '_');
-    
-    // Create HTML template for CV thumbnail
-    const htmlTemplate = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { 
-                font-family: Arial, sans-serif; 
-                background: white;
-                width: 400px;
-                height: 300px;
-                overflow: hidden;
-            }
-            .cv-container {
-                width: 100%;
-                height: 100%;
-                background: white;
-                border: 1px solid #e5e7eb;
-                position: relative;
-            }
-            .header {
-                background: #1e40af;
-                color: white;
-                padding: 15px;
-                text-align: center;
-            }
-            .name {
-                font-size: 18px;
-                font-weight: bold;
-                margin-bottom: 5px;
-            }
-            .role {
-                font-size: 12px;
-                opacity: 0.9;
-            }
-            .content {
-                padding: 15px;
-                font-size: 10px;
-                line-height: 1.4;
-            }
-            .section {
-                margin-bottom: 12px;
-            }
-            .section-title {
-                font-weight: bold;
-                color: #1e40af;
-                margin-bottom: 5px;
-                font-size: 11px;
-            }
-            .contact-info {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-                margin-bottom: 10px;
-                font-size: 9px;
-                color: #374151;
-            }
-            .profile {
-                margin-bottom: 10px;
-            }
-            .profile-text {
-                color: #374151;
-                font-size: 9px;
-                line-height: 1.3;
-            }
-            .experience-item {
-                margin-bottom: 8px;
-            }
-            .job-title {
-                font-weight: bold;
-                color: #374151;
-                font-size: 10px;
-            }
-            .company {
-                color: #6b7280;
-                font-size: 9px;
-            }
-            .education-item {
-                margin-bottom: 6px;
-            }
-            .degree {
-                font-weight: bold;
-                color: #374151;
-                font-size: 10px;
-            }
-            .institution {
-                color: #6b7280;
-                font-size: 9px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="cv-container">
-            <div class="header">
-                <div class="name">${cvData.personal?.fullName || 'Name'}</div>
-                ${cvData.personal?.role ? `<div class="role">${cvData.personal.role}</div>` : ''}
-            </div>
-            <div class="content">
-                <div class="contact-info">
-                    ${cvData.personal?.email ? `<span>📧 ${cvData.personal.email}</span>` : ''}
-                    ${cvData.personal?.phone ? `<span>📞 ${cvData.personal.phone}</span>` : ''}
-                    ${cvData.personal?.location ? `<span>📍 ${cvData.personal.location}</span>` : ''}
-                </div>
-                
-                ${cvData.profile?.summary ? `
-                <div class="section profile">
-                    <div class="section-title">Profile</div>
-                    <div class="profile-text">${cvData.profile.summary.substring(0, 150)}${cvData.profile.summary.length > 150 ? '...' : ''}</div>
-                </div>
-                ` : ''}
-                
-                ${cvData.experience && cvData.experience.length > 0 ? `
-                <div class="section">
-                    <div class="section-title">Experience</div>
-                    ${cvData.experience.slice(0, 2).map(exp => `
-                        <div class="experience-item">
-                            <div class="job-title">${exp.title || 'Position'}</div>
-                            <div class="company">${exp.company || 'Company'} • ${exp.startDate || 'Start'} - ${exp.endDate || 'Present'}</div>
-                        </div>
-                    `).join('')}
-                </div>
-                ` : ''}
-                
-                ${cvData.education && cvData.education.length > 0 ? `
-                <div class="section">
-                    <div class="section-title">Education</div>
-                    ${cvData.education.slice(0, 1).map(edu => `
-                        <div class="education-item">
-                            <div class="degree">${edu.degree || 'Degree'}</div>
-                            <div class="institution">${edu.institution || 'Institution'}</div>
-                        </div>
-                    `).join('')}
-                </div>
-                ` : ''}
-            </div>
-        </div>
-    </body>
-    </html>
-    `;
-
     // Launch Puppeteer and generate thumbnail
+    logger.debug('Launching Puppeteer', { userId, draftId });
+
     const browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
-    
+
     const page = await browser.newPage();
     await page.setContent(htmlTemplate);
-    
-    const thumbnailPath = path.join(thumbnailsDir, `${sanitizedFilename}.png`);
+
+    // A4 aspect ratio (210x297mm) scaled to 400px width = 565px height
     await page.screenshot({
       path: thumbnailPath,
       width: 400,
-      height: 300,
-      clip: { x: 0, y: 0, width: 400, height: 300 }
+      height: 565,
+      clip: { x: 0, y: 0, width: 400, height: 565 }
     });
-    
+
     await browser.close();
-    
-    // Return the thumbnail URL
-    const thumbnailUrl = `/thumbnails/${sanitizedFilename}.png`;
-    
+
+    logger.info('Thumbnail generated successfully', {
+      userId,
+      draftId,
+      filename,
+      path: thumbnailPath
+    });
+
+    // Update database with new thumbnail URL and hash
+    const thumbnailUrl = `/thumbnails/${filename}`;
+
+    await prisma.draft.update({
+      where: { id: draftId },
+      data: {
+        thumbnailUrl,
+        thumbnailHash: contentHash,
+      },
+    });
+
+    logger.info('Database updated with thumbnail info', { userId, draftId, url: thumbnailUrl });
+
     return res.json({
       thumbnail: thumbnailUrl,
-      name: cvData.personal?.fullName || 'CV Preview'
+      cached: false,
+      message: 'Thumbnail generated successfully',
     });
   } catch (error) {
-    console.error('Error generating thumbnail:', error);
-    return res.status(500).json({
-      error: 'Failed to generate thumbnail',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    logger.error('Thumbnail generation failed', {
+      userId,
+      draftId,
+      error: error.message,
+      stack: error.stack
     });
+    throw new ExternalServiceError('Failed to generate thumbnail', 'puppeteer');
   }
-};
+});
 
 module.exports = { exportPDF, generateThumbnail };

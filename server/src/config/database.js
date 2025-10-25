@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { createSoftDeleteMiddleware, SoftDeleteUtils } = require('../middleware/softDelete');
+const logger = require('./logger');
 
 // Connection pool configuration
 const getConnectionConfig = () => {
@@ -27,7 +28,7 @@ const getConnectionConfig = () => {
     url.search = existingParams.toString();
     return url.toString();
   } catch (error) {
-    console.warn('Failed to parse DATABASE_URL for connection pooling:', error.message);
+    logger.warn('Failed to parse DATABASE_URL for connection pooling', { error: error.message });
     return baseUrl;
   }
 };
@@ -54,33 +55,37 @@ const maxConnectionAttempts = 3;
 const connectWithRetry = async () => {
   try {
     await prisma.$connect();
-    console.log('Database connected successfully');
+    logger.info('Database connected successfully');
     connectionAttempts = 0;
   } catch (err) {
     connectionAttempts++;
-    console.error(`Database connection error (attempt ${connectionAttempts}/${maxConnectionAttempts}):`, err.message);
-    
+    logger.error('Database connection error', {
+      attempt: connectionAttempts,
+      maxAttempts: maxConnectionAttempts,
+      error: err.message
+    });
+
     if (connectionAttempts < maxConnectionAttempts) {
-      console.log('Retrying connection in 5 seconds...');
+      logger.info('Retrying database connection in 5 seconds');
       setTimeout(connectWithRetry, 5000);
     } else {
-      console.log('Max connection attempts reached. Database will connect on first query (Neon auto-wake)');
+      logger.warn('Max connection attempts reached - database will connect on first query (Neon auto-wake)');
     }
   }
 };
 
 // Handle connection timeout for Neon's sleep/wake behavior
-connectWithRetry();
+// Don't call connectWithRetry() here - let the server handle the connection
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-  console.log('Disconnecting from database...');
+  logger.info('Disconnecting from database (SIGINT)');
   await prisma.$disconnect();
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
-  console.log('Disconnecting from database...');
+  logger.info('Disconnecting from database (SIGTERM)');
   await prisma.$disconnect();
   process.exit(0);
 });

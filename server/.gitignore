@@ -3,3 +3,9 @@ dist
 .env
 *.log
 .DS_Store
+
+# Logs directory
+logs/
+
+# Sentry
+.sentryclirc
